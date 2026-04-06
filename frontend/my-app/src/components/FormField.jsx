@@ -1,6 +1,6 @@
 function FormField({ id, label, type = "text", maxLength, value, onChange, error, placeholder }) {
   return (
-    <div className="input-group">
+    <div className="input-field">
       <label htmlFor={id}>{label}</label>
       <input
         id={id}
