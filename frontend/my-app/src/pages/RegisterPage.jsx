@@ -1,32 +1,13 @@
 import { registerApi, fetchJson } from "../API/LoginRegisterApi";
 import "../App.css";
-import "./LoginRegister.css";
-import { useState } from "react";
+import "../styls/LoginRegister.css";
+import { useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { getErrorMessage } from "../utils/errorUtil";
+import UserNameField from "../components/UserNameField";
+import EmailField from "../components/EmailField";
+import PasswordField from "../components/PasswordField";
 
-const NAME_MAX_LENGTH = 30;
-const MAIL_MAX_LENGTH = 50;
-const PASSWORD_MIN_LENGTH = 8;
-const PASSWORD_MAX_LENGTH = 16;
-
-function isValidEmail(value) {
-  const regex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-  return regex.test(value);
-}
-
-function isValidUserName(value) {
-  const regex = /^[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\uFF01-\uFF60]+$/;
-  return regex.test(value);
-}
-
-function isValidPassword(value) {
-  const hasLetter = /[A-Za-z]/.test(value);
-  const hasNumber = /[0-9]/.test(value);
-  const hasSymbol = /[^A-Za-z0-9]/.test(value);
-  const typeCount = [hasLetter, hasNumber, hasSymbol].filter(Boolean).length;
-  return typeCount >= 2;
-}
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -35,69 +16,22 @@ function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [nameError, setNameError] = useState("");
-  const [mailError, setMailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
   const [commonError, setCommonError] = useState("");
-
-  const validate = () => {
-    let valid = true;
-
-    setNameError("");
-    setMailError("");
-    setPasswordError("");
-    setCommonError("");
-
-    if (!userName) {
-      setNameError(getErrorMessage("E001", "ユーザ名"));
-      valid = false;
-    } else if (userName.length > NAME_MAX_LENGTH) {
-      setNameError(getErrorMessage("E003", "ユーザ名", NAME_MAX_LENGTH));
-      valid = false;
-    } else if (!isValidUserName(userName)) {
-      setNameError(getErrorMessage("E002", "ユーザ名"));
-      valid = false;
-    }
-
-    if (!email) {
-    setMailError(getErrorMessage("E001", "メールアドレス"));
-    valid = false;
-    } else if (email.length > MAIL_MAX_LENGTH) {
-    setMailError(getErrorMessage("E003", "メールアドレス", MAIL_MAX_LENGTH));
-    valid = false;
-    } else if (!isValidEmail(email)) {
-    setMailError(getErrorMessage("E002", "メールアドレス"));
-    valid = false;
-    }
-
-    if (!password) {
-      setPasswordError(getErrorMessage("E001", "パスワード"));
-      valid = false;
-    } else if (
-      password.length < PASSWORD_MIN_LENGTH ||
-      password.length > PASSWORD_MAX_LENGTH
-    ) {
-      setPasswordError(
-        getErrorMessage(
-          "E004",
-          "パスワード",
-          PASSWORD_MIN_LENGTH,
-          PASSWORD_MAX_LENGTH
-        )
-      );
-      valid = false;
-    } else if (!isValidPassword(password)) {
-      setPasswordError(getErrorMessage("E002", "パスワード"));
-      valid = false;
-    }
-
-    return valid;
-  };
+  
+  const nameRef = useRef();
+  const emailRef = useRef();
+  const passwordRef = useRef();
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setCommonError("");
 
-    if (!validate()) return;
+    let valid = true;
+    if (!nameRef.current.validate()) valid = false;
+    if (!emailRef.current.validate()) valid = false;
+    if (!passwordRef.current.validate()) valid = false;
+    if (!valid) return;
+
 
     try {
       await fetchJson("http://localhost:8080/api/users/register", {
@@ -113,7 +47,7 @@ function RegisterPage() {
       navigate("/");
     } catch (error) {
       if (error?.messageId === "E005") {
-        setMailError(error.message);
+        emailRef.current.setError(error.message);
       } else if (error?.message) {
         setCommonError(error.message);
       } else {
@@ -138,44 +72,26 @@ function RegisterPage() {
         </p >
 
         <form onSubmit={handleRegister}>
-          <div className="input-group">
-            <label htmlFor="user_name">ユーザ名</label>
-            <input
-              id="user_name"
-              type="text"
-              maxLength="30"
-              value={userName}
-              onChange={(e) => {
-                const trimmed = e.target.value.replace(/[\s\u3000]/g, "");
-                setUserName(trimmed);
-              }}
-            />
-            {nameError && <p className="error-text">{nameError}</p >}
-          </div>
+          <UserNameField
+            ref={nameRef}
+            value={userName}
+            onChange={setUserName}
+            placeholder="ユーザ名を入力"
+          />
 
-          <div className="input-group">
-            <label htmlFor="email">メールアドレス</label>
-            <input
-              id="email"
-              type="text"
-              maxLength="50"
+          <EmailField
+              ref={emailRef}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            {mailError && <p className="error-text">{mailError}</p >}
-          </div>
+              onChange={setEmail}
+              placeholder="メールアドレスを入力"
+          />
 
-          <div className="input-group">
-            <label htmlFor="password">パスワード</label>
-            <input
-              id="password"
-              type="password"
-              maxLength="16"
+          <PasswordField
+              ref={passwordRef}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            {passwordError && <p className="error-text">{passwordError}</p >}
-          </div>
+              onChange={setPassword}
+              placeholder="パスワードを入力"
+          />
 
           {commonError && <p className="error-text">{commonError}</p >}
 

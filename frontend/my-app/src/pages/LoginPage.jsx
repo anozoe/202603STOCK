@@ -1,27 +1,12 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { getErrorMessage } from '../utils/errorUtil';
 import { useNavigate, Link } from "react-router-dom";
-import "./LoginRegister.css";
+import "../styls/LoginRegister.css";
 import { loginApi } from "../API/LoginRegisterApi";
+import EmailField from '../components/EmailField';
+import PasswordField from '../components/PasswordField';
 
 
-const MAIL_MAX_LENGTH = 50;
-const PASSWORD_MIN_LENGTH = 8;
-const PASSWORD_MAX_LENGTH = 16;
-
-function isValidEmail(value) {
-  const regex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-  return regex.test(value);
-}
-
-function isValidPassword(value) {
-  const hasLetter = /[A-Za-z]/.test(value);
-  const hasNumber = /[0-9]/.test(value);
-  const hasSymbol = /[^A-Za-z0-9]/.test(value);
-
-  const typeCount = [hasLetter, hasNumber, hasSymbol].filter(Boolean).length;
-  return typeCount >= 2;
-}
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -29,61 +14,23 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [mailError, setMailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  
   const [loginError, setLoginError] = useState("");
   const [connectError, setConnectError] = useState("");
 
+  const emailRef = useRef();
+  const passwordRef = useRef();
 
-  const mailChecker = (value) => {
-    if (!value) {
-      setMailError(getErrorMessage("E001", "メールアドレス"));
-      return false;
-    }
-
-    if (!isValidEmail(value)) {
-      setMailError(getErrorMessage("E002", "メールアドレス"));
-      return false;
-    }
-
-    if (value.length > MAIL_MAX_LENGTH) {
-      setMailError(getErrorMessage("E003", "メールアドレス", MAIL_MAX_LENGTH));
-      return false;
-    }
-    return true;
-  };
-
-  const passwordChecker = (value) => {
-    if (!value) {
-      setPasswordError(getErrorMessage("E001", "パスワード"));
-      return false;
-    }
-
-    if (value.length < PASSWORD_MIN_LENGTH || value.length > PASSWORD_MAX_LENGTH) {
-      setPasswordError(
-        getErrorMessage("E004", "パスワード", PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH)
-      );
-      return false;
-    }
-    if (!isValidPassword(value)) {
-      setPasswordError(getErrorMessage("E002", "パスワード"));
-      return false;
-    }
-
-    return true;
-  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    setMailError("");
-    setPasswordError("");
     setLoginError("");
     setConnectError("");
 
     let valid = true;
-    if (!mailChecker(email)) valid = false;
-    if (!passwordChecker(password)) valid = false;
+    if (!emailRef.current.validate()) valid = false;
+    if (!passwordRef.current.validate()) valid = false;
     if (!valid) return;
 
     try {
@@ -125,41 +72,19 @@ function LoginPage() {
         )}
 
         <form onSubmit={handleLogin}>
-          <div className="input-group">
-            <label htmlFor="email">メールアドレス</label>
-            <input
-              id="email"
-              type="text"
-              maxLength="50"
+          <EmailField
+              ref={emailRef}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={setEmail}
               placeholder="メールアドレスを入力"
-            />
+          />
 
-            {mailError && (
-              <p id="mail_error_message" className="error-text">
-                {mailError}
-              </p >
-            )}
-          </div>
-
-          <div className="input-group">
-            <label htmlFor="password">パスワード</label>
-            <input
-              id="password"
-              type="password"
-              maxLength="16"
+          <PasswordField
+              ref={passwordRef}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={setPassword}
               placeholder="パスワードを入力"
-            />
-
-            {passwordError && (
-              <p id="password_error_message" className="error-text">
-                {passwordError}
-              </p >
-            )}
-          </div>
+          />
 
           <button id="login_button" type="submit" className="main-button">
             ログイン

@@ -99,3 +99,7 @@
 .sub-link:hover{
   text-decoration:underline;
 }
+
+.error-text {
+  color: red;
+}
