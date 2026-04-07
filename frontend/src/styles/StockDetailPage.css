@@ -1,0 +1,91 @@
+.stock-detail-screen {
+  min-height: 100vh;
+}
+
+.stock-detail-page-body {
+  width: 1120px;
+  margin: 24px auto;
+}
+
+.back-button {
+  width: 90px;
+  height: 34px;
+  border: 1px solid #999999;
+  background: #e0e0e0;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+.stock-detail-summary {
+  line-height: 2;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.detail-tab-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.detail-tab-row button,
+.chart-toolbar button {
+  min-width: 80px;
+  height: 34px;
+  border: 1px solid #999999;
+  background: #e0e0e0;
+  cursor: pointer;
+}
+
+.detail-tab-row button.active,
+.chart-toolbar button.active {
+  background: #f39800;
+  border-color: #d97a00;
+  color: #ffffff;
+}
+
+.overview-tab {
+  display: flex;
+  gap: 24px;
+}
+
+.overview-card {
+  flex: 1;
+  border: 1px solid #cccccc;
+  padding: 16px;
+}
+
+.overview-card-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.chart-toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.chart-ma-check {
+  margin-left: 8px;
+}
+
+.chart-placeholder {
+  border: 1px solid #cccccc;
+  min-height: 280px;
+  padding: 16px;
+}
+
+.chart-placeholder-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.chart-placeholder-list {
+  font-size: 13px;
+  line-height: 1.8;
+}
