@@ -3,6 +3,7 @@ package com.example.stock.dto;
 import java.util.List;
 
 public class FavoriteStockListResponse {
+
     private long totalCount;
     private long currentCount;
     private long maxCount;

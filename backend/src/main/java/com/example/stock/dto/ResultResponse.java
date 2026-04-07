@@ -7,5 +7,7 @@ public class ResultResponse {
         this.resultCode = resultCode;
     }
 
-    public String getResultCode() { return resultCode; }
+    public String getResultCode() {
+        return resultCode;
+    }
 }
