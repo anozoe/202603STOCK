@@ -1,36 +1,40 @@
 package com.example.stock.dto;
 
 import java.math.BigDecimal;
+import java.util.List;
 
-public class FavoriteStockItemResponse {
+public class StockDetailResponse {
 
     private String tickerCode;
     private String stockName;
     private Integer market;
     private BigDecimal currentPrice;
     private BigDecimal priceChange;
-    private BigDecimal changeRate;
-    private Long marketCap;
-    private boolean favorite;
+    private String fetchedAt;
+    private StockOverviewResponse overview;
+    private List<StockChartPointResponse> weekChart;
+    private List<StockChartPointResponse> monthChart;
 
-    public FavoriteStockItemResponse(
+    public StockDetailResponse(
             String tickerCode,
             String stockName,
             Integer market,
             BigDecimal currentPrice,
             BigDecimal priceChange,
-            BigDecimal changeRate,
-            Long marketCap,
-            boolean favorite
+            String fetchedAt,
+            StockOverviewResponse overview,
+            List<StockChartPointResponse> weekChart,
+            List<StockChartPointResponse> monthChart
     ) {
         this.tickerCode = tickerCode;
         this.stockName = stockName;
         this.market = market;
         this.currentPrice = currentPrice;
         this.priceChange = priceChange;
-        this.changeRate = changeRate;
-        this.marketCap = marketCap;
-        this.favorite = favorite;
+        this.fetchedAt = fetchedAt;
+        this.overview = overview;
+        this.weekChart = weekChart;
+        this.monthChart = monthChart;
     }
 
     public String getTickerCode() { return tickerCode; }
@@ -38,7 +42,8 @@ public class FavoriteStockItemResponse {
     public Integer getMarket() { return market; }
     public BigDecimal getCurrentPrice() { return currentPrice; }
     public BigDecimal getPriceChange() { return priceChange; }
-    public BigDecimal getChangeRate() { return changeRate; }
-    public Long getMarketCap() { return marketCap; }
-    public boolean isFavorite() { return favorite; }
+    public String getFetchedAt() { return fetchedAt; }
+    public StockOverviewResponse getOverview() { return overview; }
+    public List<StockChartPointResponse> getWeekChart() { return weekChart; }
+    public List<StockChartPointResponse> getMonthChart() { return monthChart; }
 }

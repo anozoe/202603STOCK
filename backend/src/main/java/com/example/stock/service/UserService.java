@@ -1,7 +1,6 @@
 package com.example.stock.service;
 
 import com.example.stock.dto.*;
-import com.example.stock.entity.Stock;
 import com.example.stock.entity.User;
 import com.example.stock.entity.UserFavorite;
 import com.example.stock.exception.BusinessException;
@@ -20,7 +19,7 @@ import java.util.regex.Pattern;
 public class UserService {
 
     private static final Long LOGIN_USER_ID = 1L;
-    private static final int MAX_FAVORITES = 20;
+    private static final long MAX_FAVORITES = 20L;
     private static final Pattern EMAIL_PATTERN =
             Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     private static final Pattern FULL_WIDTH_PATTERN =
@@ -64,9 +63,9 @@ public class UserService {
         user.setUpdatedBy("system");
 
         try {
-            userRepository.save(user);
+          userRepository.save(user);
         } catch (Exception e) {
-            throw new BusinessException("E006");
+          throw new BusinessException("E006");
         }
 
         return new UserUpdateResponse(
@@ -89,7 +88,16 @@ public class UserService {
 
         List<FavoriteStockItemResponse> items = result.getContent().stream()
                 .map(UserFavorite::getStock)
-                .map(this::toFavoriteItem)
+                .map(stock -> new FavoriteStockItemResponse(
+                        stock.getTickerCode(),
+                        stock.getStockName(),
+                        stock.getMarket(),
+                        stock.getCurrentPrice(),
+                        stock.getPriceChange(),
+                        stock.getChangeRate(),
+                        stock.getMarketCap(),
+                        true
+                ))
                 .toList();
 
         return new FavoriteStockListResponse(
@@ -102,29 +110,12 @@ public class UserService {
 
     @Transactional
     public ResultResponse removeFavorite(String tickerCode) {
-        if (tickerCode == null || tickerCode.isBlank()) {
-            throw new BusinessException("E001", "銘柄コード");
-        }
-
         UserFavorite favorite = userFavoriteRepository
-                .findByUserIdAndStockTickerCode(LOGIN_USER_ID, tickerCode.trim())
+                .findByUserIdAndStockTickerCode(LOGIN_USER_ID, tickerCode)
                 .orElseThrow(() -> new BusinessException("E010", "お気に入り銘柄"));
 
         userFavoriteRepository.delete(favorite);
         return new ResultResponse("SUCCESS");
-    }
-
-    private FavoriteStockItemResponse toFavoriteItem(Stock stock) {
-        return new FavoriteStockItemResponse(
-                stock.getTickerCode(),
-                stock.getStockName(),
-                stock.getMarket(),
-                stock.getCurrentPrice(),
-                stock.getPriceChange(),
-                stock.getChangeRate(),
-                stock.getMarketCap(),
-                true
-        );
     }
 
     private User getLoginUser() {
@@ -133,27 +124,15 @@ public class UserService {
     }
 
     private void validateUserName(String userName) {
-        if (userName.isBlank()) {
-            throw new BusinessException("E001", "ユーザ名");
-        }
-        if (userName.length() > 30) {
-            throw new BusinessException("E003", "ユーザ名", "30");
-        }
-        if (!FULL_WIDTH_PATTERN.matcher(userName).matches()) {
-            throw new BusinessException("E002", "ユーザ名");
-        }
+        if (userName.isBlank()) throw new BusinessException("E001", "ユーザ名");
+        if (userName.length() > 30) throw new BusinessException("E003", "ユーザ名", "30");
+        if (!FULL_WIDTH_PATTERN.matcher(userName).matches()) throw new BusinessException("E002", "ユーザ名");
     }
 
     private void validateEmail(String email) {
-        if (email.isBlank()) {
-            throw new BusinessException("E001", "メールアドレス");
-        }
-        if (email.length() > 50) {
-            throw new BusinessException("E003", "メールアドレス", "50");
-        }
-        if (!EMAIL_PATTERN.matcher(email).matches()) {
-            throw new BusinessException("E002", "メールアドレス");
-        }
+        if (email.isBlank()) throw new BusinessException("E001", "メールアドレス");
+        if (email.length() > 50) throw new BusinessException("E003", "メールアドレス", "50");
+        if (!EMAIL_PATTERN.matcher(email).matches()) throw new BusinessException("E002", "メールアドレス");
     }
 
     private String normalizeSpaces(String value) {

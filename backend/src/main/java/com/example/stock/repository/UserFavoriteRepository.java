@@ -14,4 +14,8 @@ public interface UserFavoriteRepository extends JpaRepository<UserFavorite, Long
     long countByUserId(Long userId);
 
     Optional<UserFavorite> findByUserIdAndStockTickerCode(Long userId, String tickerCode);
+
+    boolean existsByUserIdAndStockId(Long userId, Long stockId);
+
+    void deleteByUserIdAndStockId(Long userId, Long stockId);
 }

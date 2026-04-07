@@ -2,7 +2,7 @@ package com.example.stock.dto;
 
 import java.math.BigDecimal;
 
-public class FavoriteStockItemResponse {
+public class StockListItemResponse {
 
     private String tickerCode;
     private String stockName;
@@ -13,7 +13,7 @@ public class FavoriteStockItemResponse {
     private Long marketCap;
     private boolean favorite;
 
-    public FavoriteStockItemResponse(
+    public StockListItemResponse(
             String tickerCode,
             String stockName,
             Integer market,
