@@ -12,7 +12,6 @@ function StockListPage() {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [page, setPage] = useState(0);
   const [message, setMessage] = useState("");
-
   const [data, setData] = useState({
     totalCount: 0,
     currentFavoriteCount: 0,
@@ -31,11 +30,6 @@ function StockListPage() {
     } catch (error) {
       setMessage(error.message);
     }
-  }
-
-  function handleSearch() {
-    setPage(0);
-    setSearchKeyword(keyword);
   }
 
   async function handleToggleFavorite(tickerCode) {
@@ -62,7 +56,14 @@ function StockListPage() {
             placeholder="銘柄コードまたは銘柄名"
             className="stock-search-input"
           />
-          <button type="button" className="stock-search-button" onClick={handleSearch}>
+          <button
+            type="button"
+            className="stock-search-button"
+            onClick={() => {
+              setPage(0);
+              setSearchKeyword(keyword);
+            }}
+          >
             検索
           </button>
         </div>
@@ -73,6 +74,7 @@ function StockListPage() {
           maxCount={data.maxFavoriteCount}
           items={data.items}
           onToggleFavorite={handleToggleFavorite}
+          fromPath="/stocks"
         />
 
         <Pagination

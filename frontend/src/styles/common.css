@@ -1,0 +1,153 @@
+body {
+  margin: 0;
+  background: #ffffff;
+  font-family: Arial, sans-serif;
+  color: #222222;
+}
+
+.common-header {
+  height: 56px;
+  border-bottom: 1px solid #cccccc;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+.common-header-title {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.common-header-right {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.header-link-button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 14px;
+}
+
+.stock-list-component-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.stock-list-component-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.stock-list-component-favorite-count {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.stock-list-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.stock-list-table th,
+.stock-list-table td {
+  border: 1px solid #cccccc;
+  padding: 10px 8px;
+  font-size: 14px;
+  background: #ffffff;
+}
+
+.stock-list-table th {
+  background: #5b5b5b;
+  color: #ffffff;
+  text-align: left;
+}
+
+.stock-list-table .col-code { width: 110px; }
+.stock-list-table .col-name { width: 220px; }
+.stock-list-table .col-market { width: 110px; }
+.stock-list-table .col-price { width: 120px; }
+.stock-list-table .col-change { width: 120px; }
+.stock-list-table .col-rate { width: 110px; }
+.stock-list-table .col-cap { width: 140px; }
+.stock-list-table .col-favorite { width: 100px; }
+
+.stock-name-link {
+  border: none;
+  background: none;
+  padding: 0;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 14px;
+  color: #222222;
+}
+
+.favorite-cell {
+  text-align: center;
+}
+
+.favorite-star {
+  border: none;
+  background: none;
+  color: #b0b0b0;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.favorite-star.active {
+  color: #f2b600;
+}
+
+.plus-value {
+  color: #d93025;
+  font-weight: bold;
+}
+
+.minus-value {
+  color: #188038;
+  font-weight: bold;
+}
+
+.empty-cell {
+  text-align: center;
+  color: #666666;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.page-button {
+  min-width: 34px;
+  height: 34px;
+  border: 1px solid #bdbdbd;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.page-button.active,
+.page-button:disabled {
+  background: #e5e5e5;
+  color: #222222;
+  cursor: default;
+}
+
+.page-message {
+  margin-bottom: 14px;
+  font-size: 14px;
+}
+
+.loading-screen {
+  padding: 24px;
+}

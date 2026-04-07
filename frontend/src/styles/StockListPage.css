@@ -1,0 +1,30 @@
+.stock-list-screen {
+  min-height: 100vh;
+}
+
+.stock-list-page-body {
+  width: 1120px;
+  margin: 24px auto;
+}
+
+.stock-search-box {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.stock-search-input {
+  width: 320px;
+  height: 34px;
+  border: 1px solid #bdbdbd;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.stock-search-button {
+  width: 80px;
+  height: 34px;
+  border: 1px solid #999999;
+  background: #e0e0e0;
+  cursor: pointer;
+}
