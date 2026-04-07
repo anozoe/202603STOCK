@@ -22,3 +22,5 @@ public class ApiResponse<T> {
     public void setMessage(String message) { this.message = message; }
     public void setData(T data) { this.data = data; }
 }
+
+//messageIdは機械用、messageは人間用のメッセージ。dataは必要に応じて返すデータ。

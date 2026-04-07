@@ -33,6 +33,9 @@ public class Stock {
     @Column(name = "market_cap")
     private Long marketCap;
 
+    @Column(name = "display_order")
+    private Integer displayOrder;
+
     @Column(name = "fetched_at")
     private LocalDateTime fetchedAt;
 
@@ -44,6 +47,7 @@ public class Stock {
     public BigDecimal getPriceChange() { return priceChange; }
     public BigDecimal getChangeRate() { return changeRate; }
     public Long getMarketCap() { return marketCap; }
+    public Integer getDisplayOrder() { return displayOrder; }
     public LocalDateTime getFetchedAt() { return fetchedAt; }
 
     public void setId(Long id) { this.id = id; }
@@ -54,5 +58,6 @@ public class Stock {
     public void setPriceChange(BigDecimal priceChange) { this.priceChange = priceChange; }
     public void setChangeRate(BigDecimal changeRate) { this.changeRate = changeRate; }
     public void setMarketCap(Long marketCap) { this.marketCap = marketCap; }
+    public void setDisplayOrder(Integer displayOrder) { this.displayOrder = displayOrder; }
     public void setFetchedAt(LocalDateTime fetchedAt) { this.fetchedAt = fetchedAt; }
 }
