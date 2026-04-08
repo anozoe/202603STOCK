@@ -1,9 +1,12 @@
 package com.example.stock.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @Table(name = "stocks")
 public class Stock {
@@ -38,26 +41,4 @@ public class Stock {
 
     @Column(name = "fetched_at")
     private LocalDateTime fetchedAt;
-
-    public Long getId() { return id; }
-    public String getTickerCode() { return tickerCode; }
-    public String getStockName() { return stockName; }
-    public Integer getMarket() { return market; }
-    public BigDecimal getCurrentPrice() { return currentPrice; }
-    public BigDecimal getPriceChange() { return priceChange; }
-    public BigDecimal getChangeRate() { return changeRate; }
-    public Long getMarketCap() { return marketCap; }
-    public Integer getDisplayOrder() { return displayOrder; }
-    public LocalDateTime getFetchedAt() { return fetchedAt; }
-
-    public void setId(Long id) { this.id = id; }
-    public void setTickerCode(String tickerCode) { this.tickerCode = tickerCode; }
-    public void setStockName(String stockName) { this.stockName = stockName; }
-    public void setMarket(Integer market) { this.market = market; }
-    public void setCurrentPrice(BigDecimal currentPrice) { this.currentPrice = currentPrice; }
-    public void setPriceChange(BigDecimal priceChange) { this.priceChange = priceChange; }
-    public void setChangeRate(BigDecimal changeRate) { this.changeRate = changeRate; }
-    public void setMarketCap(Long marketCap) { this.marketCap = marketCap; }
-    public void setDisplayOrder(Integer displayOrder) { this.displayOrder = displayOrder; }
-    public void setFetchedAt(LocalDateTime fetchedAt) { this.fetchedAt = fetchedAt; }
 }

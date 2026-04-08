@@ -1,13 +1,10 @@
 package com.example.stock.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
 public class ResultResponse {
     private String resultCode;
-
-    public ResultResponse(String resultCode) {
-        this.resultCode = resultCode;
-    }
-
-    public String getResultCode() {
-        return resultCode;
-    }
 }

@@ -1,26 +1,25 @@
 package com.example.stock.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ApiResponse<T> {
 
     private String messageId;
     private String message;
     private T data;
 
-    public ApiResponse() {}
-
-    public ApiResponse(String messageId, String message, T data) {
-        this.messageId = messageId;
-        this.message = message;
-        this.data = data;
+    public static <T> ApiResponse<T> success(String messageId, String message, T data) {
+        return new ApiResponse<>(messageId, message, data);
     }
 
-    public String getMessageId() { return messageId; }
-    public String getMessage() { return message; }
-    public T getData() { return data; }
-
-    public void setMessageId(String messageId) { this.messageId = messageId; }
-    public void setMessage(String message) { this.message = message; }
-    public void setData(T data) { this.data = data; }
+    public static <T> ApiResponse<T> error(String messageId, String message) {
+        return new ApiResponse<>(messageId, message, null);
+    }
 }
 
-//messageIdは機械用、messageは人間用のメッセージ。dataは必要に応じて返すデータ。
+//messageIdは機械可読なエラーコードや成功コードを表す文字列で、messageは人間が理解しやすい説明文を表す文字列です。dataは任意の型Tのデータを格納するためのフィールドです。successメソッドは成功時のレスポンスを生成し、errorメソッドはエラー時のレスポンスを生成します。
