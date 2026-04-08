@@ -1,11 +1,13 @@
 package com.example.stock.dto;
 
+import jakarta.validation.constraints.NotEmpty;
+import lombok.Data;
+
 import java.util.List;
 
+@Data
 public class AdminStockReorderRequest {
 
+    @NotEmpty
     private List<Long> stockIds;
-
-    public List<Long> getStockIds() { return stockIds; }
-    public void setStockIds(List<Long> stockIds) { this.stockIds = stockIds; }
 }

@@ -1,21 +1,18 @@
 package com.example.stock.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+import java.math.BigDecimal;
+
+@Data
+@AllArgsConstructor
 public class AdminStockItemResponse {
 
     private Long id;
     private String tickerCode;
     private String stockName;
+    private Integer market;
+    private BigDecimal currentPrice;
     private Integer displayOrder;
-
-    public AdminStockItemResponse(Long id, String tickerCode, String stockName, Integer displayOrder) {
-        this.id = id;
-        this.tickerCode = tickerCode;
-        this.stockName = stockName;
-        this.displayOrder = displayOrder;
-    }
-
-    public Long getId() { return id; }
-    public String getTickerCode() { return tickerCode; }
-    public String getStockName() { return stockName; }
-    public Integer getDisplayOrder() { return displayOrder; }
 }
