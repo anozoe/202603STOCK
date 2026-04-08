@@ -7,12 +7,10 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class FavoriteStockListResponse {
-    private int totalFavorites;
+public class AdminStockListResponse {
+    private int totalCount;
     private int page;
     private int size;
     private int totalPages;
-    private int currentFavoriteCount;
-    private int maxFavoriteCount;
-    private List<StockListItemResponse> items;
+    private List<AdminStockItemResponse> items;
 }

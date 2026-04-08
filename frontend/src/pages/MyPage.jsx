@@ -40,9 +40,12 @@ function MyPage() {
   const [form, setForm] = useState({ userName: "", email: "" });
   const [errors, setErrors] = useState({ userName: "", email: "" });
   const [favoriteData, setFavoriteData] = useState({
-    totalCount: 0,
-    currentCount: 0,
-    maxCount: 20,
+    totalFavorites: 0,
+    page: 0,
+    size: 20,
+    totalPages: 0,
+    currentFavoriteCount: 0,
+    maxFavoriteCount: 20,
     items: [],
   });
 
@@ -196,8 +199,8 @@ function MyPage() {
 
       <StockListTable
         title="お気に入り銘柄"
-        currentCount={favoriteData.currentCount}
-        maxCount={favoriteData.maxCount}
+        currentCount={favoriteData.currentFavoriteCount}
+        maxCount={favoriteData.maxFavoriteCount}
         items={favoriteData.items}
         onToggleFavorite={handleRemoveFavorite}
         fromPath="/mypage"
@@ -205,7 +208,7 @@ function MyPage() {
 
       <Pagination
         currentPage={currentPage}
-        totalCount={favoriteData.totalCount}
+        totalCount={favoriteData.totalFavorites}
         pageSize={PAGE_SIZE}
         onPageChange={setCurrentPage}
       />

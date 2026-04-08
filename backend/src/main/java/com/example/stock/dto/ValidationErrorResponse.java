@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ResultResponse {
-    private String resultCode;
+public class ValidationErrorResponse {
+    private String messageId;
+    private String message;
 }

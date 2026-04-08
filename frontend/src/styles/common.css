@@ -34,6 +34,26 @@ body {
   font-size: 14px;
 }
 
+.btn-gray {
+  border: 1px solid #999999;
+  background: #e0e0e0;
+  cursor: pointer;
+}
+
+.btn-orange {
+  border: 1px solid #d97a00;
+  background: #f39800;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.btn-danger {
+  border: 1px solid #c62828;
+  background: #ef5350;
+  color: #ffffff;
+  cursor: pointer;
+}
+
 .stock-list-component-header {
   display: flex;
   justify-content: space-between;

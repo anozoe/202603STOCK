@@ -1,12 +1,6 @@
-const BASE_URL = "http://localhost:8080/api/stocks";
+import { parseResponse } from "./apiClient";
 
-async function parseResponse(response) {
-  const json = await response.json();
-  if (!response.ok) {
-    throw new Error(json.message || "エラーが発生しました。");
-  }
-  return json;
-}
+const BASE_URL = "http://localhost:8080/api/stocks";
 
 export async function fetchStocks(keyword = "", page = 0, size = 20) {
   return parseResponse(
@@ -16,14 +10,28 @@ export async function fetchStocks(keyword = "", page = 0, size = 20) {
   );
 }
 
+export async function fetchFavoriteStocks(page = 0, size = 20) {
+  return parseResponse(
+    await fetch(`${BASE_URL}/favorites?page=${page}&size=${size}`)
+  );
+}
+
 export async function fetchStockDetail(tickerCode) {
   return parseResponse(await fetch(`${BASE_URL}/${tickerCode}`));
 }
 
-export async function toggleFavorite(tickerCode) {
+export async function addFavorite(tickerCode) {
   return parseResponse(
     await fetch(`${BASE_URL}/${tickerCode}/favorite`, {
       method: "POST",
+    })
+  );
+}
+
+export async function removeFavorite(tickerCode) {
+  return parseResponse(
+    await fetch(`${BASE_URL}/${tickerCode}/favorite`, {
+      method: "DELETE",
     })
   );
 }
