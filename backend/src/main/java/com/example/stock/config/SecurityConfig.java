@@ -1,4 +1,4 @@
-package com.example.stock;
+package com.example.stock.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
