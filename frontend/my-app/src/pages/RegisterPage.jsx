@@ -1,6 +1,6 @@
 import { fetchJson } from "../API/LoginRegisterApi";
 import "../App.css";
-import "../styls/LoginRegister.css";
+import "../styles/LoginRegister.css";
 import { useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { getErrorMessage } from "../utils/errorUtil";

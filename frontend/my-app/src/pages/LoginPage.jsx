@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { getErrorMessage } from '../utils/errorUtil';
 import { useNavigate, Link } from "react-router-dom";
-import "../styls/LoginRegister.css";
+import "../styles/LoginRegister.css";
 import { loginApi } from "../API/LoginRegisterApi";
 import EmailField from '../components/EmailField';
 import PasswordField from '../components/PasswordField';
@@ -97,7 +97,7 @@ function LoginPage() {
 
         <div className="link-area">
           <Link id="to_register_link" to="/register" className="sub-link">
-            新規会員登録はこちら
+            ユーザ登録へ
           </Link>
         </div>
       </div>

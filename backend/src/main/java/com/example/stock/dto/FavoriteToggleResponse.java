@@ -1,14 +1,10 @@
 package com.example.stock.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
 public class FavoriteToggleResponse {
-
     private boolean favorite;
-
-    public FavoriteToggleResponse(boolean favorite) {
-        this.favorite = favorite;
-    }
-
-    public boolean isFavorite() {
-        return favorite;
-    }
 }

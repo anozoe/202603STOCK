@@ -1,46 +1,56 @@
 package com.example.stock.controller;
 
-import com.example.stock.dto.*;
+import com.example.stock.dto.ApiResponse;
+import com.example.stock.dto.UserInfoResponse;
+import com.example.stock.dto.UserUpdateRequest;
+import com.example.stock.dto.ValidationErrorResponse;
 import com.example.stock.service.MessageService;
 import com.example.stock.service.UserService;
+import com.example.stock.util.ValidationErrorUtil;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "http://localhost:3000")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
     private final MessageService messageService;
 
-    public UserController(UserService userService, MessageService messageService) {
-        this.userService = userService;
-        this.messageService = messageService;
-    }
-
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserInfoResponse>> getMyInfo() {
-        return ResponseEntity.ok(new ApiResponse<>(null, null, userService.getMyInfo()));
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "I001",
+                        messageService.getMessage("I001"),
+                        userService.getMyInfo()
+                )
+        );
     }
 
     @PutMapping("/me")
-    public ResponseEntity<ApiResponse<UserUpdateResponse>> updateMyInfo(@RequestBody UserUpdateRequest request) {
-        UserUpdateResponse data = userService.updateMyInfo(request);
-        return ResponseEntity.ok(new ApiResponse<>("I001", messageService.getMessage("I001"), data));
-    }
-
-    @GetMapping("/me/favorites")
-    public ResponseEntity<ApiResponse<FavoriteStockListResponse>> getMyFavorites(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+    public ResponseEntity<ApiResponse<?>> updateMyInfo(
+            @Valid @RequestBody UserUpdateRequest request,
+            BindingResult result
     ) {
-        return ResponseEntity.ok(new ApiResponse<>(null, null, userService.getMyFavorites(page, size)));
-    }
+        if (result.hasErrors()) {
+            ValidationErrorResponse error = ValidationErrorUtil.getFirstError(result, messageService);
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(error.getMessageId(), error.getMessage())
+            );
+        }
 
-    @DeleteMapping("/me/favorites/{tickerCode}")
-    public ResponseEntity<ApiResponse<ResultResponse>> removeFavorite(@PathVariable String tickerCode) {
-        ResultResponse data = userService.removeFavorite(tickerCode);
-        return ResponseEntity.ok(new ApiResponse<>("I002", messageService.getMessage("I002"), data));
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "I005",
+                        messageService.getMessage("I005"),
+                        userService.updateMyInfo(request)
+                )
+        );
     }
 }

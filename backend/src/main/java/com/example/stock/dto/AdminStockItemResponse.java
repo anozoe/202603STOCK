@@ -7,13 +7,12 @@ import java.math.BigDecimal;
 
 @Data
 @AllArgsConstructor
-public class StockListItemResponse {
+public class AdminStockItemResponse {
+
+    private Long id;
     private String tickerCode;
     private String stockName;
     private Integer market;
     private BigDecimal currentPrice;
-    private BigDecimal priceChange;
-    private BigDecimal changeRate;
-    private Long marketCap;
-    private boolean favorite;
+    private Integer displayOrder;
 }

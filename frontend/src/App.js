@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import MyPage from "./pages/MyPage";
 import StockListPage from "./pages/StockListPage";
 import StockDetailPage from "./pages/StockDetailPage";
+import AdminPage from "./pages/AdminPage";
 import "./styles/common.css";
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/stocks" element={<StockListPage />} />
         <Route path="/stocks/:tickerCode" element={<StockDetailPage />} />
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </BrowserRouter>
   );
