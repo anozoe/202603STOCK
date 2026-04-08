@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Pagination from "../components/Pagination";
 import {
@@ -28,7 +28,7 @@ import "../styles/AdminPage.css";
 
 const PAGE_SIZE = 20;
 
-function SortableStockRow({ stock, index, onEdit, onDelete }) {
+function SortableStockRow({ stock, rowNumber, onEdit, onDelete }) {
   const {
     attributes,
     listeners,
@@ -44,39 +44,22 @@ function SortableStockRow({ stock, index, onEdit, onDelete }) {
   };
 
   return (
-    <tr
-      ref={setNodeRef}
-      style={style}
-      className={isDragging ? "admin-row-dragging" : ""}
-    >
+    <tr ref={setNodeRef} style={style} className={isDragging ? "admin-row-dragging" : ""}>
       <td className="admin-drag-cell">
-        <button
-          type="button"
-          className="admin-drag-handle"
-          {...attributes}
-          {...listeners}
-        >
+        <button type="button" className="admin-drag-handle" {...attributes} {...listeners}>
           ☰
         </button>
       </td>
-      <td>{index + 1}</td>
+      <td>{rowNumber}</td>
       <td>{stock.tickerCode}</td>
       <td>{stock.stockName}</td>
       <td>
-        <button
-          type="button"
-          className="admin-action-button"
-          onClick={() => onEdit(stock)}
-        >
+        <button type="button" className="admin-action-button" onClick={() => onEdit(stock)}>
           編集
         </button>
       </td>
       <td>
-        <button
-          type="button"
-          className="admin-danger-button"
-          onClick={() => onDelete(stock.id)}
-        >
+        <button type="button" className="admin-danger-button" onClick={() => onDelete(stock.id)}>
           削除
         </button>
       </td>
@@ -90,8 +73,9 @@ function AdminPage() {
   const [stockPage, setStockPage] = useState(0);
   const [stockData, setStockData] = useState({
     totalCount: 0,
-    currentCount: 0,
-    maxCount: 100,
+    page: 0,
+    size: 20,
+    totalPages: 0,
     items: [],
   });
 
@@ -107,11 +91,16 @@ function AdminPage() {
   const [stockForm, setStockForm] = useState({
     tickerCode: "",
     stockName: "",
+    market: 1,
+    currentPrice: "",
+    priceChange: "",
+    changeRate: "",
+    marketCap: "",
+    displayOrder: 1,
   });
   const [stockFormError, setStockFormError] = useState("");
 
   const sensors = useSensors(useSensor(PointerSensor));
-  const sortableIds = useMemo(() => stockData.items.map((item) => item.id), [stockData.items]);
 
   useEffect(() => {
     loadStocks(stockPage);
@@ -141,7 +130,16 @@ function AdminPage() {
 
   function openCreateModal() {
     setEditingStockId(null);
-    setStockForm({ tickerCode: "", stockName: "" });
+    setStockForm({
+      tickerCode: "",
+      stockName: "",
+      market: 1,
+      currentPrice: "",
+      priceChange: "",
+      changeRate: "",
+      marketCap: "",
+      displayOrder: stockData.totalCount + 1,
+    });
     setStockFormError("");
     setModalOpen(true);
   }
@@ -149,8 +147,15 @@ function AdminPage() {
   function openEditModal(stock) {
     setEditingStockId(stock.id);
     setStockForm({
+      id: stock.id,
       tickerCode: stock.tickerCode || "",
       stockName: stock.stockName || "",
+      market: stock.market ?? 1,
+      currentPrice: stock.currentPrice ?? "",
+      priceChange: stock.priceChange ?? "",
+      changeRate: stock.changeRate ?? "",
+      marketCap: stock.marketCap ?? "",
+      displayOrder: stock.displayOrder ?? 1,
     });
     setStockFormError("");
     setModalOpen(true);
@@ -159,24 +164,19 @@ function AdminPage() {
   function closeModal() {
     setModalOpen(false);
     setEditingStockId(null);
-    setStockForm({ tickerCode: "", stockName: "" });
     setStockFormError("");
   }
 
   async function handleSaveStock() {
     try {
-      if (!stockForm.tickerCode.trim()) {
-        setStockFormError("銘柄コードは必須です。");
-        return;
-      }
-      if (!stockForm.stockName.trim()) {
-        setStockFormError("銘柄名は必須です。");
-        return;
-      }
-
       const payload = {
-        tickerCode: stockForm.tickerCode.trim(),
-        stockName: stockForm.stockName.trim(),
+        ...stockForm,
+        market: Number(stockForm.market),
+        currentPrice: stockForm.currentPrice === "" ? null : Number(stockForm.currentPrice),
+        priceChange: stockForm.priceChange === "" ? null : Number(stockForm.priceChange),
+        changeRate: stockForm.changeRate === "" ? null : Number(stockForm.changeRate),
+        marketCap: stockForm.marketCap === "" ? null : Number(stockForm.marketCap),
+        displayOrder: Number(stockForm.displayOrder),
       };
 
       if (editingStockId) {
@@ -247,26 +247,14 @@ function AdminPage() {
           <div className="admin-section-header">
             <div className="admin-section-title">銘柄管理</div>
             <div className="admin-section-right">
-              <div className="admin-count-text">
-                現在の登録数：{stockData.currentCount}/{stockData.maxCount}社
-              </div>
-              <button
-                type="button"
-                className="admin-primary-button"
-                onClick={openCreateModal}
-              >
+              <div className="admin-count-text">現在の登録数：{stockData.totalCount}/100社</div>
+              <button type="button" className="admin-primary-button" onClick={openCreateModal}>
                 新規登録
               </button>
             </div>
           </div>
 
-          <div className="admin-inline-error">{stockFormError}</div>
-
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <table className="admin-table">
               <thead>
                 <tr>
@@ -278,21 +266,18 @@ function AdminPage() {
                   <th className="admin-col-action">削除</th>
                 </tr>
               </thead>
-
-              <SortableContext items={sortableIds} strategy={verticalListSortingStrategy}>
+              <SortableContext items={stockData.items.map((item) => item.id)} strategy={verticalListSortingStrategy}>
                 <tbody>
                   {stockData.items.length === 0 ? (
                     <tr>
-                      <td colSpan="6" className="admin-empty-cell">
-                        登録銘柄はありません。
-                      </td>
+                      <td colSpan="6" className="admin-empty-cell">登録銘柄はありません。</td>
                     </tr>
                   ) : (
                     stockData.items.map((stock, index) => (
                       <SortableStockRow
                         key={stock.id}
                         stock={stock}
-                        index={index}
+                        rowNumber={stockPage * PAGE_SIZE + index + 1}
                         onEdit={openEditModal}
                         onDelete={handleDeleteStock}
                       />
@@ -332,14 +317,12 @@ function AdminPage() {
             <tbody>
               {userData.items.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="admin-empty-cell">
-                    対象ユーザはありません。
-                  </td>
+                  <td colSpan="5" className="admin-empty-cell">対象ユーザはありません。</td>
                 </tr>
               ) : (
                 userData.items.map((user) => (
-                  <tr key={user.id}>
-                    <td>{user.id}</td>
+                  <tr key={user.userId}>
+                    <td>{user.userId}</td>
                     <td>{user.userName}</td>
                     <td>{user.email}</td>
                     <td>{user.role}</td>
@@ -347,7 +330,7 @@ function AdminPage() {
                       <button
                         type="button"
                         className="admin-danger-button"
-                        onClick={() => handleDeleteUser(user.id)}
+                        onClick={() => handleDeleteUser(user.userId)}
                       >
                         削除
                       </button>
@@ -371,16 +354,8 @@ function AdminPage() {
         <div className="admin-modal-overlay">
           <div className="admin-modal">
             <div className="admin-modal-header">
-              <div className="admin-modal-title">
-                {editingStockId ? "編集" : "新規登録"}
-              </div>
-              <button
-                type="button"
-                className="admin-close-button"
-                onClick={closeModal}
-              >
-                ×
-              </button>
+              <div className="admin-modal-title">{editingStockId ? "編集" : "新規登録"}</div>
+              <button type="button" className="admin-close-button" onClick={closeModal}>×</button>
             </div>
 
             <div className="admin-modal-body">
@@ -389,9 +364,7 @@ function AdminPage() {
                 <input
                   type="text"
                   value={stockForm.tickerCode}
-                  onChange={(e) =>
-                    setStockForm((prev) => ({ ...prev, tickerCode: e.target.value }))
-                  }
+                  onChange={(e) => setStockForm((prev) => ({ ...prev, tickerCode: e.target.value }))}
                   className="admin-modal-input"
                 />
               </div>
@@ -401,9 +374,37 @@ function AdminPage() {
                 <input
                   type="text"
                   value={stockForm.stockName}
-                  onChange={(e) =>
-                    setStockForm((prev) => ({ ...prev, stockName: e.target.value }))
-                  }
+                  onChange={(e) => setStockForm((prev) => ({ ...prev, stockName: e.target.value }))}
+                  className="admin-modal-input"
+                />
+              </div>
+
+              <div className="admin-modal-row">
+                <label className="admin-modal-label">市場</label>
+                <input
+                  type="number"
+                  value={stockForm.market}
+                  onChange={(e) => setStockForm((prev) => ({ ...prev, market: e.target.value }))}
+                  className="admin-modal-input"
+                />
+              </div>
+
+              <div className="admin-modal-row">
+                <label className="admin-modal-label">現在値</label>
+                <input
+                  type="number"
+                  value={stockForm.currentPrice}
+                  onChange={(e) => setStockForm((prev) => ({ ...prev, currentPrice: e.target.value }))}
+                  className="admin-modal-input"
+                />
+              </div>
+
+              <div className="admin-modal-row">
+                <label className="admin-modal-label">表示順</label>
+                <input
+                  type="number"
+                  value={stockForm.displayOrder}
+                  onChange={(e) => setStockForm((prev) => ({ ...prev, displayOrder: e.target.value }))}
                   className="admin-modal-input"
                 />
               </div>
@@ -411,11 +412,7 @@ function AdminPage() {
               <div className="admin-modal-error">{stockFormError}</div>
 
               <div className="admin-modal-footer">
-                <button
-                  type="button"
-                  className="admin-primary-button"
-                  onClick={handleSaveStock}
-                >
+                <button type="button" className="admin-primary-button" onClick={handleSaveStock}>
                   更新
                 </button>
               </div>

@@ -30,11 +30,7 @@ public class AdminController {
             @RequestParam(defaultValue = "20") int size
     ) {
         return ResponseEntity.ok(
-                ApiResponse.success(
-                        "I001",
-                        messageService.getMessage("I001"),
-                        adminService.getStocks(page, size)
-                )
+                ApiResponse.success("I001", messageService.getMessage("I001"), adminService.getStocks(page, size))
         );
     }
 
@@ -51,13 +47,8 @@ public class AdminController {
         }
 
         adminService.createStock(request);
-
         return ResponseEntity.ok(
-                ApiResponse.success(
-                        "I003",
-                        messageService.getMessage("I003"),
-                        null
-                )
+                ApiResponse.success("I003", messageService.getMessage("I003"), null)
         );
     }
 
@@ -74,13 +65,16 @@ public class AdminController {
         }
 
         adminService.updateStock(request);
-
         return ResponseEntity.ok(
-                ApiResponse.success(
-                        "I005",
-                        messageService.getMessage("I005"),
-                        null
-                )
+                ApiResponse.success("I005", messageService.getMessage("I005"), null)
+            );
+    }
+
+    @DeleteMapping("/stocks/{id}")
+    public ResponseEntity<ApiResponse<?>> deleteStock(@PathVariable Long id) {
+        adminService.deleteStock(id);
+        return ResponseEntity.ok(
+                ApiResponse.success("I004", messageService.getMessage("I004"), null)
         );
     }
 
@@ -97,13 +91,8 @@ public class AdminController {
         }
 
         adminService.reorder(request);
-
         return ResponseEntity.ok(
-                ApiResponse.success(
-                        "I006",
-                        messageService.getMessage("I006"),
-                        null
-                )
+                ApiResponse.success("I006", messageService.getMessage("I006"), null)
         );
     }
 
@@ -113,24 +102,15 @@ public class AdminController {
             @RequestParam(defaultValue = "20") int size
     ) {
         return ResponseEntity.ok(
-                ApiResponse.success(
-                        "I001",
-                        messageService.getMessage("I001"),
-                        adminService.getUsers(page, size)
-                )
+                ApiResponse.success("I001", messageService.getMessage("I001"), adminService.getUsers(page, size))
         );
     }
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<ApiResponse<?>> deleteUser(@PathVariable Long id) {
         adminService.logicalDeleteUser(id);
-
         return ResponseEntity.ok(
-                ApiResponse.success(
-                        "I004",
-                        messageService.getMessage("I004"),
-                        null
-                )
+                ApiResponse.success("I004", messageService.getMessage("I004"), null)
         );
     }
 }

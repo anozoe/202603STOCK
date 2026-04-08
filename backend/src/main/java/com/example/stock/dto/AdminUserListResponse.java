@@ -10,5 +10,5 @@ import java.util.List;
 public class AdminUserListResponse {
     private int totalCount;
     private int maxDisplayCount;
-    private List<AdminUserItemResponse> items;
+    private List<UserInfoResponse> items;
 }

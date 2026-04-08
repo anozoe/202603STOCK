@@ -14,4 +14,6 @@ public interface UserFavoriteRepository extends JpaRepository<UserFavorite, Long
     void deleteByUserIdAndStockId(Long userId, Long stockId);
 
     int countByUserId(Long userId);
+
+    void deleteByStockId(Long stockId);
 }

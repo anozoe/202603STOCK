@@ -6,12 +6,13 @@ import com.example.stock.dto.AdminStockItemResponse;
 import com.example.stock.dto.AdminStockListResponse;
 import com.example.stock.dto.AdminStockReorderRequest;
 import com.example.stock.dto.AdminStockUpsertRequest;
-import com.example.stock.dto.AdminUserItemResponse;
 import com.example.stock.dto.AdminUserListResponse;
+import com.example.stock.dto.UserInfoResponse;
 import com.example.stock.entity.Stock;
 import com.example.stock.entity.User;
 import com.example.stock.exception.BusinessException;
 import com.example.stock.repository.StockRepository;
+import com.example.stock.repository.UserFavoriteRepository;
 import com.example.stock.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +30,7 @@ public class AdminService {
 
     private final StockRepository stockRepository;
     private final UserRepository userRepository;
+    private final UserFavoriteRepository userFavoriteRepository;
     private final ExternalStockLookupService externalStockLookupService;
 
     @Transactional(readOnly = true)
@@ -37,6 +39,9 @@ public class AdminService {
 
         return new AdminStockListResponse(
                 stockRepository.countBy(),
+                page,
+                size,
+                result.getTotalPages(),
                 result.getContent().stream()
                         .map(s -> new AdminStockItemResponse(
                                 s.getId(),
@@ -107,6 +112,15 @@ public class AdminService {
     }
 
     @Transactional
+    public void deleteStock(Long id) {
+        Stock stock = stockRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("E010", "銘柄"));
+
+        userFavoriteRepository.deleteByStockId(stock.getId());
+        stockRepository.delete(stock);
+    }
+
+    @Transactional
     public void reorder(AdminStockReorderRequest req) {
         if (req.getStockIds() == null || req.getStockIds().isEmpty()) {
             throw new BusinessException("E001", "並び順");
@@ -132,7 +146,7 @@ public class AdminService {
                 userRepository.countByDeletedAtIsNull(),
                 BusinessConstants.MAX_ADMIN_USER_DISPLAY_COUNT,
                 result.getContent().stream()
-                        .map(this::toAdminUserItemResponse)
+                        .map(this::toUserInfoResponse)
                         .toList()
         );
     }
@@ -176,16 +190,17 @@ public class AdminService {
         }
     }
 
-    private AdminUserItemResponse toAdminUserItemResponse(User user) {
+    private UserInfoResponse toUserInfoResponse(User user) {
         String roleName = user.getRole() != null && user.getRole() == RoleCode.ADMIN
                 ? "管理者"
                 : "一般ユーザ";
 
-        return new AdminUserItemResponse(
+        return new UserInfoResponse(
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
-                roleName
+                roleName,
+                user.getUpdatedAt() == null ? null : user.getUpdatedAt().toString()
         );
     }
 }

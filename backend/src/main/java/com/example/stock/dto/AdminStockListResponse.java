@@ -9,5 +9,8 @@ import java.util.List;
 @AllArgsConstructor
 public class AdminStockListResponse {
     private int totalCount;
+    private int page;
+    private int size;
+    private int totalPages;
     private List<AdminStockItemResponse> items;
 }
