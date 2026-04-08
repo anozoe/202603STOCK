@@ -15,6 +15,7 @@ export function isValidPassword(value) {
   return [hasLetter, hasNumber, hasSymbol].filter(Boolean).length >= 2;
 }
 
+// 全角入力を許可するバリデーション
 export function isValidUserName(value) {
   const regex = /^[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\uFF01-\uFF60]+$/;
   return regex.test(value);

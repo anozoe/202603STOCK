@@ -35,23 +35,26 @@ function LoginPage() {
 
     try {
       const response = await loginApi(email, password);
+      const user = response.data;
 
-      if (!response.ok) {
-        setLoginError(getErrorMessage("E008", "メールアドレス", "パスワード"));
-        return;
+      localStorage.setItem("loginUserId", user.id);
+      localStorage.setItem("loginUserName", user.name);
+      localStorage.setItem("loginUserEmail", user.email);
+      localStorage.setItem("loginUserRole", user.role);
+      
+      //TODO: 正確な遷移先のパスを入れる
+      if (user.role === "管理者") {
+        navigate("/admin");
+      } else {
+        navigate("/users");
       }
-
-      const data = await response.json();
-
-      localStorage.setItem("loginUserId", data.id);
-      localStorage.setItem("loginUserName", data.name);
-      localStorage.setItem("loginUserEmail", data.email);
-
-      //TODO: 管理者画面遷移追加
-      navigate("/users");
     } catch (error) {
       console.error(error);
-      setConnectError(getErrorMessage("E007", "サーバー"));
+      if (error?.messageId) {
+        setLoginError(error.message);
+      } else {
+        setConnectError(getErrorMessage("E007", "サーバー"));
+      }
     }
   };
 

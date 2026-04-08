@@ -1,4 +1,4 @@
-import { registerApi, fetchJson } from "../API/LoginRegisterApi";
+import { fetchJson } from "../API/LoginRegisterApi";
 import "../App.css";
 import "../styles/LoginRegister.css";
 import { useRef, useState } from "react";
@@ -12,11 +12,11 @@ import PasswordField from "../components/PasswordField";
 function RegisterPage() {
   const navigate = useNavigate();
 
-  const [userName, setUserName] = useState("");
+  const [user_name, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [commonError, setCommonError] = useState("");
+  const [error_message, setErrorMessage] = useState("");
   
   const nameRef = useRef();
   const emailRef = useRef();
@@ -24,7 +24,7 @@ function RegisterPage() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setCommonError("");
+    setErrorMessage("");
 
     let valid = true;
     if (!nameRef.current.validate()) valid = false;
@@ -37,21 +37,20 @@ function RegisterPage() {
       await fetchJson("http://localhost:8080/api/users/register", {
         method: "POST",
         body: JSON.stringify({
-          name: userName,
+          name: user_name,
           email,
           password,
         }),
       });
 
-      alert("ユーザ登録成功");
       navigate("/");
     } catch (error) {
       if (error?.messageId === "E005") {
         emailRef.current.setError(error.message);
       } else if (error?.message) {
-        setCommonError(error.message);
+        setErrorMessage(error.message);
       } else {
-        setCommonError("サーバーに接続できません。");
+        setErrorMessage(getErrorMessage("E013", "ユーザ登録"));
       }
     }
   };
@@ -59,22 +58,22 @@ function RegisterPage() {
   return (
     <div className="auth-container">
       <div className="auth-box">
-        <h1 className="auth-title">ユーザ登録</h1>
+        <h1 className="title_register">ユーザ登録</h1>
 
-        <p className="auth-subtitle">
-          名前、メールアドレス、パスワードを入力してください
-        </p >
-
-        <p className="password-rule">
+        <p className="register_guide">
+          名前、メールアドレス、パスワードを入力してください。
+          <p></p>
           ※パスワードは8文字以上16文字以下で入力してください。
-          <br />
+          <p></p>
           英字・数字・記号のうち2種類以上を含める必要があります。
         </p >
+        
+        {error_message && <p className="error-text">{error_message}</p >}
 
         <form onSubmit={handleRegister}>
           <UserNameField
             ref={nameRef}
-            value={userName}
+            value={user_name}
             onChange={setUserName}
             placeholder="ユーザ名を入力"
           />
@@ -93,7 +92,6 @@ function RegisterPage() {
               placeholder="パスワードを入力"
           />
 
-          {commonError && <p className="error-text">{commonError}</p >}
 
           <button type="submit" className="main-button">
             登録
@@ -101,9 +99,12 @@ function RegisterPage() {
         </form>
 
         <div className="link-area">
-          <Link to="/" className="sub-link">
-            ログイン画面はこちら
-          </Link>
+          <button 
+            className="sub-button"
+            onClick={() => navigate("/")}
+          >
+            ログインへ
+          </button>
         </div>
       </div>
     </div>
