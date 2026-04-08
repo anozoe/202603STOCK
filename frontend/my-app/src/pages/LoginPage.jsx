@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { getErrorMessage } from '../utils/errorUtil';
 import { useNavigate, Link } from "react-router-dom";
-import "../styls/LoginRegister.css";
+import "../styles/LoginRegister.css";
 import { loginApi } from "../API/LoginRegisterApi";
 import EmailField from '../components/EmailField';
 import PasswordField from '../components/PasswordField';
