@@ -10,13 +10,16 @@ import lombok.Data;
 @Data
 public class UserUpdateRequest {
 
-    @NotBlank
-    @Size(max = ValidationConstants.USER_NAME_MAX_LENGTH)
-    @Pattern(regexp = ValidationConstants.FULL_WIDTH_USER_NAME_REGEX)
+    @NotBlank(message = "E001")
+    @Size(max = ValidationConstants.USER_NAME_MAX_LENGTH, message = "E003")
+    @Pattern(
+            regexp = ValidationConstants.FULL_WIDTH_USER_NAME_REGEX,
+            message = "E002"
+    )
     private String userName;
 
-    @NotBlank
-    @Email
-    @Size(max = ValidationConstants.EMAIL_MAX_LENGTH)
+    @NotBlank(message = "E001")
+    @Email(message = "E002")
+    @Size(max = ValidationConstants.EMAIL_MAX_LENGTH, message = "E003")
     private String email;
 }

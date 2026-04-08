@@ -12,24 +12,24 @@ public class AdminStockUpsertRequest {
 
     private Long id;
 
-    @NotBlank
-    @Size(max = 20)
+    @NotBlank(message = "E001")
+    @Size(max = 20, message = "E003")
     private String tickerCode;
 
-    @NotBlank
-    @Size(max = 100)
+    @NotBlank(message = "E001")
+    @Size(max = 100, message = "E003")
     private String stockName;
 
-    @NotNull
+    @NotNull(message = "E001")
     private Integer market;
 
-    @NotNull
+    @NotNull(message = "E001")
     private BigDecimal currentPrice;
 
     private BigDecimal priceChange;
     private BigDecimal changeRate;
     private Long marketCap;
 
-    @NotNull
+    @NotNull(message = "E001")
     private Integer displayOrder;
 }

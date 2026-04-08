@@ -1,20 +1,14 @@
 package com.example.stock.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import java.util.List;
 
+@Data
+@AllArgsConstructor
 public class AdminUserListResponse {
-
-    private long totalCount;
-    private long maxDisplayCount;
+    private int totalCount;
+    private int maxDisplayCount;
     private List<AdminUserItemResponse> items;
-
-    public AdminUserListResponse(long totalCount, long maxDisplayCount, List<AdminUserItemResponse> items) {
-        this.totalCount = totalCount;
-        this.maxDisplayCount = maxDisplayCount;
-        this.items = items;
-    }
-
-    public long getTotalCount() { return totalCount; }
-    public long getMaxDisplayCount() { return maxDisplayCount; }
-    public List<AdminUserItemResponse> getItems() { return items; }
 }

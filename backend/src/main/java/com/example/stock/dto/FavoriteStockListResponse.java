@@ -8,11 +8,11 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class FavoriteStockListResponse {
-    private long totalFavorites;
+    private int totalFavorites;
     private int page;
     private int size;
     private int totalPages;
-    private long currentFavoriteCount;
-    private long maxFavoriteCount;
+    private int currentFavoriteCount;
+    private int maxFavoriteCount;
     private List<StockListItemResponse> items;
 }

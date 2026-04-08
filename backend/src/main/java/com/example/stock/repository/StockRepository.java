@@ -26,7 +26,7 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
 
     Page<Stock> findAllByOrderByDisplayOrderAscIdAsc(Pageable pageable);
 
-    long countBy();
+    int countBy();
 
     Optional<Stock> findTopByOrderByDisplayOrderDesc();
 

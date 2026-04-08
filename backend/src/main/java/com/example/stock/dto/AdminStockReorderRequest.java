@@ -8,6 +8,6 @@ import java.util.List;
 @Data
 public class AdminStockReorderRequest {
 
-    @NotEmpty
+    @NotEmpty(message = "E001")
     private List<Long> stockIds;
 }

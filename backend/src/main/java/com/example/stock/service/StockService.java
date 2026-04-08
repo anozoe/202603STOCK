@@ -31,7 +31,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StockService {
 
-    /*詳細画面の概要情報は現状ダミー実装*/
+    /*詳細画面の概要情報は現状ダミー実装。*/
     private static final BigDecimal DUMMY_OPEN_PRICE = BigDecimal.valueOf(180.10);
     private static final BigDecimal DUMMY_HIGH_PRICE = BigDecimal.valueOf(182.40);
     private static final BigDecimal DUMMY_LOW_PRICE = BigDecimal.valueOf(179.30);
@@ -60,7 +60,7 @@ public class StockService {
                 PageRequest.of(page, size)
         );
 
-        long currentFavoriteCount = userFavoriteRepository.countByUserId(BusinessConstants.LOGIN_USER_ID);
+        int currentFavoriteCount = userFavoriteRepository.countByUserId(BusinessConstants.LOGIN_USER_ID);
 
         List<StockListItemResponse> items = result.getContent().stream()
                 .map(stock -> new StockListItemResponse(
@@ -76,7 +76,7 @@ public class StockService {
                 .toList();
 
         return new StockListResponse(
-                result.getTotalElements(),
+                Math.toIntExact(result.getTotalElements()),
                 page,
                 size,
                 result.getTotalPages(),
@@ -93,7 +93,7 @@ public class StockService {
                 PageRequest.of(page, size)
         );
 
-        long currentFavoriteCount = userFavoriteRepository.countByUserId(BusinessConstants.LOGIN_USER_ID);
+        int currentFavoriteCount = userFavoriteRepository.countByUserId(BusinessConstants.LOGIN_USER_ID);
 
         List<StockListItemResponse> items = result.getContent().stream()
                 .map(UserFavorite::getStock)
@@ -110,7 +110,7 @@ public class StockService {
                 .toList();
 
         return new FavoriteStockListResponse(
-                result.getTotalElements(),
+                Math.toIntExact(result.getTotalElements()),
                 page,
                 size,
                 result.getTotalPages(),
@@ -145,7 +145,7 @@ public class StockService {
         Stock stock = stockRepository.findByTickerCode(tickerCode)
                 .orElseThrow(() -> new BusinessException("E010", "銘柄"));
 
-        long currentFavoriteCount = userFavoriteRepository.countByUserId(BusinessConstants.LOGIN_USER_ID);
+        int currentFavoriteCount = userFavoriteRepository.countByUserId(BusinessConstants.LOGIN_USER_ID);
         if (currentFavoriteCount >= BusinessConstants.MAX_FAVORITE_COUNT) {
             throw new BusinessException("E012", "お気に入り銘柄", "登録");
         }
