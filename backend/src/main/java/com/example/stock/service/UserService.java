@@ -8,6 +8,7 @@ import com.example.stock.repository.UserFavoriteRepository;
 import com.example.stock.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.util.regex.Pattern;
 @Service
 public class UserService {
 
+    private final PasswordEncoder passwordEncoder;
     private static final Long LOGIN_USER_ID = 1L;
     private static final long MAX_FAVORITES = 20L;
     private static final Pattern EMAIL_PATTERN =
@@ -28,9 +30,11 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserFavoriteRepository userFavoriteRepository;
 
-    public UserService(UserRepository userRepository, UserFavoriteRepository userFavoriteRepository) {
+
+    public UserService(UserRepository userRepository, UserFavoriteRepository userFavoriteRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userFavoriteRepository = userFavoriteRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional(readOnly = true)
@@ -142,5 +146,29 @@ public class UserService {
 
     private String trimToEmpty(String value) {
         return value == null ? "" : value.trim();
+    }
+
+    @Transactional
+    public void register(UserRegisterRequest request) {
+        userRepository.findByEmail(request.getEmail())
+            .ifPresent(u -> { throw new BusinessException("E005", "メールアドレス"); });
+
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setCreatedAt(LocalDateTime.now());
+        user.setCreatedBy("system");
+        userRepository.save(user);
+    }
+
+    public User login(UserLoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+            .orElseThrow(() -> new BusinessException("E010", "ユーザ"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new BusinessException("E002", "パスワード");
+        }
+        return user;
     }
 }
