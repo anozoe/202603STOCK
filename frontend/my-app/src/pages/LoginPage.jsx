@@ -47,6 +47,7 @@ function LoginPage() {
       localStorage.setItem("loginUserName", data.name);
       localStorage.setItem("loginUserEmail", data.email);
 
+      //TODO: 管理者画面遷移追加
       navigate("/users");
     } catch (error) {
       console.error(error);
@@ -93,7 +94,7 @@ function LoginPage() {
 
         <div className="link-area">
           <Link id="to_register_link" to="/register" className="sub-link">
-            新規会員登録はこちら
+            ユーザ登録へ
           </Link>
         </div>
       </div>
