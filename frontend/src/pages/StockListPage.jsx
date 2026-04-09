@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import StockListTable from "../components/StockListTable";
 import Pagination from "../components/Pagination";
-import { fetchStocks, toggleFavorite } from "../api/stockApi";
+import { addFavorite, fetchStocks, removeFavorite } from "../api/stockApi";
 import "../styles/StockListPage.css";
 
 const PAGE_SIZE = 20;
@@ -34,7 +34,12 @@ function StockListPage() {
 
   async function handleToggleFavorite(tickerCode) {
     try {
-      await toggleFavorite(tickerCode);
+      const item = data.items.find((s) => s.tickerCode === tickerCode);
+      if (item?.favorite) {
+        await removeFavorite(tickerCode);
+      } else {
+        await addFavorite(tickerCode);
+      }
       await loadStocks(searchKeyword, page);
     } catch (error) {
       setMessage(error.message);

@@ -1,3 +1,5 @@
+import "../styles/LoginRegister.css";
+
 function FormField({ id, label, type = "text", maxLength, value, onChange, error, placeholder }) {
   return (
     <div className="input-field">
