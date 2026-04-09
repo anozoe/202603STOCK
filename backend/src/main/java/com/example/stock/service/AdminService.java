@@ -35,10 +35,10 @@ public class AdminService {
 
     @Transactional(readOnly = true)
     public AdminStockListResponse getStocks(int page, int size) {
-        var result = stockRepository.findAllByOrderByDisplayOrderAscIdAsc(PageRequest.of(page, size));
+        var result = stockRepository.findAll(PageRequest.of(page, size));
 
         return new AdminStockListResponse(
-                stockRepository.countBy(),
+                (int)stockRepository.count(),
                 page,
                 size,
                 result.getTotalPages(),
@@ -57,7 +57,7 @@ public class AdminService {
 
     @Transactional
     public void createStock(AdminStockUpsertRequest req) {
-        if (stockRepository.countBy() >= BusinessConstants.MAX_ADMIN_STOCK_COUNT) {
+        if (stockRepository.count() >= BusinessConstants.MAX_ADMIN_STOCK_COUNT) {
             throw new BusinessException("E012", "銘柄", "登録");
         }
 

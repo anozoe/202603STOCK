@@ -1,64 +1,44 @@
-.stock-detail-screen {
-  min-height: 100vh;
-}
-
 .stock-detail-page-body {
-  width: 1120px;
-  margin: 24px auto;
+  padding-bottom: 40px;
 }
 
 .back-button {
-  width: 90px;
-  height: 34px;
-  border: 1px solid #999999;
-  background: #e0e0e0;
-  cursor: pointer;
+  min-width: 90px;
   margin-bottom: 16px;
 }
 
 .stock-detail-summary {
+  margin-bottom: 20px;
+  padding: 18px 20px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
   line-height: 2;
   font-size: 16px;
-  margin-bottom: 20px;
 }
 
 .detail-tab-row {
   display: flex;
   gap: 8px;
   margin-bottom: 16px;
-}
-
-.detail-tab-row button,
-.chart-toolbar button {
-  min-width: 80px;
-  height: 34px;
-  border: 1px solid #999999;
-  background: #e0e0e0;
-  cursor: pointer;
-}
-
-.detail-tab-row button.active,
-.chart-toolbar button.active {
-  background: #f39800;
-  border-color: #d97a00;
-  color: #ffffff;
+  flex-wrap: wrap;
 }
 
 .overview-tab {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
 }
 
 .overview-card {
-  flex: 1;
-  border: 1px solid #cccccc;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   padding: 16px;
 }
 
 .overview-card-title {
-  font-size: 18px;
-  font-weight: bold;
   margin-bottom: 12px;
+  font-size: 18px;
 }
 
 .chart-toolbar {
@@ -70,22 +50,35 @@
 }
 
 .chart-ma-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   margin-left: 8px;
+  font-size: 14px;
 }
 
 .chart-placeholder {
-  border: 1px solid #cccccc;
   min-height: 280px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   padding: 16px;
+  background: var(--color-surface);
 }
 
 .chart-placeholder-title {
-  font-size: 18px;
-  font-weight: bold;
   margin-bottom: 16px;
+  font-size: 18px;
 }
 
 .chart-placeholder-list {
+  margin: 0;
+  padding-left: 20px;
   font-size: 13px;
   line-height: 1.8;
+}
+
+@media (max-width: 768px) {
+  .overview-tab {
+    grid-template-columns: 1fr;
+  }
 }

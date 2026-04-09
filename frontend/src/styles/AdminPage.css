@@ -1,196 +1,130 @@
-.admin-screen {
-  min-height: 100vh;
-  background: #ffffff;
-}
-
 .admin-page-body {
-  width: 1120px;
-  margin: 24px auto;
-}
-
-.admin-message {
-  margin-bottom: 14px;
-  font-size: 14px;
-  color: #222222;
+  padding-bottom: 40px;
 }
 
 .admin-section {
   margin-bottom: 36px;
 }
 
+.admin-tab-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 16px;
+}
+
+.admin-tab-link {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.admin-tab-link.active {
+  text-decoration: none;
+}
+
 .admin-section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
   margin-bottom: 12px;
+  flex-wrap: wrap;
 }
 
 .admin-section-title {
   font-size: 24px;
-  font-weight: bold;
 }
 
 .admin-section-right {
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.admin-count-text {
-  font-size: 16px;
-  font-weight: bold;
+  flex-wrap: wrap;
 }
 
 .admin-inline-error {
-  min-height: 20px;
   margin-bottom: 8px;
-  font-size: 13px;
-  color: #d93025;
 }
 
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
+.admin-col-drag {
+  width: 70px;
 }
 
-.admin-table th,
-.admin-table td {
-  border: 1px solid #cccccc;
-  padding: 10px 8px;
-  font-size: 14px;
-  background: #ffffff;
+.admin-col-order {
+  width: 90px;
 }
 
-.admin-table th {
-  background: #5b5b5b;
-  color: #ffffff;
-  text-align: left;
+.admin-col-code {
+  width: 170px;
 }
 
-.admin-col-drag { width: 70px; }
-.admin-col-order { width: 90px; }
-.admin-col-code { width: 170px; }
-.admin-col-name { width: 360px; }
-.admin-col-action { width: 120px; }
-.admin-col-user-id { width: 90px; }
-.admin-col-user-name { width: 220px; }
-.admin-col-user-email { width: 360px; }
-.admin-col-user-role { width: 120px; }
+.admin-col-name {
+  width: 360px;
+}
 
-.admin-empty-cell {
-  text-align: center;
-  color: #666666;
+.admin-col-action {
+  width: 120px;
+}
+
+.admin-col-user-id {
+  width: 90px;
+}
+
+.admin-col-user-name {
+  width: 220px;
+}
+
+.admin-col-user-email {
+  width: 360px;
+}
+
+.admin-col-user-role {
+  width: 120px;
 }
 
 .admin-row-dragging td {
-  background: #fff3e0;
-}
-
-.admin-drag-cell {
-  text-align: center;
+  background: var(--color-warning-bg);
 }
 
 .admin-drag-handle {
-  border: 1px solid #999999;
-  background: #f0f0f0;
   width: 40px;
   height: 30px;
+  border: 1px solid var(--color-secondary-border);
+  border-radius: var(--radius-xs);
+  background: #f0f0f0;
   cursor: grab;
-}
-
-.admin-primary-button {
-  min-width: 90px;
-  height: 34px;
-  border: 1px solid #d97a00;
-  background: #f39800;
-  color: #ffffff;
-  cursor: pointer;
-}
-
-.admin-action-button {
-  min-width: 80px;
-  height: 32px;
-  border: 1px solid #999999;
-  background: #e0e0e0;
-  cursor: pointer;
-}
-
-.admin-danger-button {
-  min-width: 80px;
-  height: 32px;
-  border: 1px solid #c62828;
-  background: #ef5350;
-  color: #ffffff;
-  cursor: pointer;
-}
-
-.admin-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.admin-modal {
-  width: 520px;
-  background: #ffffff;
-  border: 1px solid #cccccc;
-}
-
-.admin-modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 18px;
-  border-bottom: 1px solid #cccccc;
-}
-
-.admin-modal-title {
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.admin-close-button {
-  border: none;
-  background: none;
-  font-size: 22px;
-  cursor: pointer;
-}
-
-.admin-modal-body {
-  padding: 18px;
+  font-weight: 700;
 }
 
 .admin-modal-row {
   display: flex;
   align-items: center;
+  gap: 12px;
   margin-bottom: 14px;
 }
 
 .admin-modal-label {
   width: 110px;
-  font-weight: bold;
+  flex-shrink: 0;
 }
 
 .admin-modal-input {
   flex: 1;
   height: 36px;
-  border: 1px solid #bdbdbd;
-  padding: 0 10px;
-  box-sizing: border-box;
 }
 
-.admin-modal-error {
-  min-height: 20px;
-  margin-bottom: 16px;
-  font-size: 13px;
-  color: #d93025;
-}
+@media (max-width: 768px) {
+  .admin-modal-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-.admin-modal-footer {
-  display: flex;
-  justify-content: flex-end;
+  .admin-modal-label {
+    width: 100%;
+  }
 }

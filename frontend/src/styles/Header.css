@@ -1,28 +1,43 @@
-.header-top {
-    display: flex;
-    text-align: center;
-    justify-content: space-between;
-    padding: 10px 50px;
-    background-color: #eeeeee;
+.header-top,
+.common-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
-.header-title {
-    font-weight: bold;
-    font-size: 18px;
+.header-title,
+.common-header-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.header-link {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+
+.header-link,
+.common-header-right {
+  flex-shrink: 0;
+}
+
+.header-user-link,
+.header-link-button {
+  font-weight: 700;
 }
 
 .logout-btn {
-    background-color: #ffab40;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 6px 20px;
-    font-size: 14px;
-    cursor: pointer;
-    font-weight: bold;
+  padding-inline: 20px;
+}
+
+@media (max-width: 640px) {
+  .header-top,
+  .common-header {
+    min-height: auto;
+    flex-wrap: wrap;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .header-link,
+  .common-header-right {
+    width: 100%;
+    justify-content: flex-end;
+  }
 }

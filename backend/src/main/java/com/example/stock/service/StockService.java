@@ -31,7 +31,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StockService {
 
-    /*詳細画面の概要情報は現状ダミー実装。*/
+    /* 詳細画面の概要情報は現状ダミー実装 */
     private static final BigDecimal DUMMY_OPEN_PRICE = BigDecimal.valueOf(180.10);
     private static final BigDecimal DUMMY_HIGH_PRICE = BigDecimal.valueOf(182.40);
     private static final BigDecimal DUMMY_LOW_PRICE = BigDecimal.valueOf(179.30);
@@ -41,7 +41,7 @@ public class StockService {
     private static final BigDecimal DUMMY_ROE = BigDecimal.valueOf(18.3);
     private static final BigDecimal DUMMY_DIVIDEND_YIELD = BigDecimal.valueOf(0.52);
 
-    /*チャート情報は現状ダミー生成。*/
+    /* チャート情報は現状ダミー生成 */
     private static final BigDecimal DEFAULT_BASE_PRICE = BigDecimal.valueOf(180);
     private static final BigDecimal DUMMY_OPEN_DIFF_PER_DAY = BigDecimal.valueOf(0.3);
     private static final BigDecimal DUMMY_HIGH_DIFF = BigDecimal.valueOf(2.1);
@@ -55,10 +55,9 @@ public class StockService {
 
     @Transactional(readOnly = true)
     public StockListResponse getStocks(String keyword, int page, int size) {
-        Page<Stock> result = stockRepository.searchStocks(
-                keyword == null ? "" : keyword.trim(),
-                PageRequest.of(page, size)
-        );
+        int pageIndex = Math.max(page, 0);
+
+        Page<Stock> result = stockRepository.findAll(PageRequest.of(pageIndex, size));
 
         int currentFavoriteCount = userFavoriteRepository.countByUserId(BusinessConstants.LOGIN_USER_ID);
 
@@ -71,7 +70,10 @@ public class StockService {
                         stock.getPriceChange(),
                         stock.getChangeRate(),
                         stock.getMarketCap(),
-                        userFavoriteRepository.existsByUserIdAndStockId(BusinessConstants.LOGIN_USER_ID, stock.getId())
+                        userFavoriteRepository.existsByUserIdAndStockId(
+                                BusinessConstants.LOGIN_USER_ID,
+                                stock.getId()
+                        )
                 ))
                 .toList();
 
@@ -88,9 +90,11 @@ public class StockService {
 
     @Transactional(readOnly = true)
     public FavoriteStockListResponse getFavoriteStocks(int page, int size) {
+        int pageIndex = Math.max(page, 0);
+
         Page<UserFavorite> result = userFavoriteRepository.findByUserIdOrderByStockIdAsc(
                 BusinessConstants.LOGIN_USER_ID,
-                PageRequest.of(page, size)
+                PageRequest.of(pageIndex, size)
         );
 
         int currentFavoriteCount = userFavoriteRepository.countByUserId(BusinessConstants.LOGIN_USER_ID);
@@ -150,7 +154,11 @@ public class StockService {
             throw new BusinessException("E012", "お気に入り銘柄", "登録");
         }
 
-        boolean exists = userFavoriteRepository.existsByUserIdAndStockId(BusinessConstants.LOGIN_USER_ID, stock.getId());
+        boolean exists = userFavoriteRepository.existsByUserIdAndStockId(
+                BusinessConstants.LOGIN_USER_ID,
+                stock.getId()
+        );
+
         if (!exists) {
             User user = userRepository.findById(BusinessConstants.LOGIN_USER_ID)
                     .orElseThrow(() -> new BusinessException("E010", "ユーザ"));
@@ -171,9 +179,16 @@ public class StockService {
         Stock stock = stockRepository.findByTickerCode(tickerCode)
                 .orElseThrow(() -> new BusinessException("E010", "銘柄"));
 
-        boolean exists = userFavoriteRepository.existsByUserIdAndStockId(BusinessConstants.LOGIN_USER_ID, stock.getId());
+        boolean exists = userFavoriteRepository.existsByUserIdAndStockId(
+                BusinessConstants.LOGIN_USER_ID,
+                stock.getId()
+        );
+
         if (exists) {
-            userFavoriteRepository.deleteByUserIdAndStockId(BusinessConstants.LOGIN_USER_ID, stock.getId());
+            userFavoriteRepository.deleteByUserIdAndStockId(
+                    BusinessConstants.LOGIN_USER_ID,
+                    stock.getId()
+            );
         }
 
         return new FavoriteToggleResponse(false);
