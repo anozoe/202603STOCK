@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import InputField from "../components/InputField";
+import { useEffect, useRef, useState } from "react";
 import StockListTable from "../components/StockListTable";
 import Pagination from "../components/Pagination";
 import {
@@ -9,6 +8,9 @@ import {
   removeFavorite,
 } from "../api/userApi";
 import "../styles/MyPage.css";
+import UserNameField from "../components/UserNameField";
+import EmailField from "../components/EmailField";
+import Header from "../components/Header";
 
 const PAGE_SIZE = 20;
 
@@ -87,7 +89,12 @@ function MyPage() {
     }
   }
 
+  const userNameRef = useRef();
+  const emailRef = useRef();
   async function handleUpdate() {
+    const isUserNameValid = userNameRef.current.validate();
+    const isEmailValid = emailRef.current.validate();
+    if (!isUserNameValid || !isEmailValid) return;
     const normalizedUserName = normalizeUserName(form.userName);
     const trimmedEmail = form.email.trim();
 
@@ -132,7 +139,7 @@ function MyPage() {
 
   return (
     <div className="mypage-screen">
-      <div className="mypage-title">マイページ</div>
+      <Header/>
 
       {message && <div className="page-message">{message}</div>}
 
@@ -163,26 +170,17 @@ function MyPage() {
           </>
         ) : (
           <>
-            <InputField
-              label="ユーザ名:"
+            <UserNameField
+              ref={userNameRef}
               value={form.userName}
               onChange={(value) => setForm((prev) => ({ ...prev, userName: value }))}
-              onBlur={() =>
-                setForm((prev) => ({
-                  ...prev,
-                  userName: normalizeUserName(prev.userName),
-                }))
-              }
-              error={errors.userName}
-              maxLength={30}
+              placeholder="ユーザ名"
             />
-            <InputField
-              label="メールアドレス:"
-              type="email"
+            <EmailField
+              ref={emailRef}
               value={form.email}
               onChange={(value) => setForm((prev) => ({ ...prev, email: value }))}
-              error={errors.email}
-              maxLength={50}
+              placeholder="メールアドレス"
             />
             <div className="mypage-button-area">
               <button

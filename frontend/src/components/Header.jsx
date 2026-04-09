@@ -4,9 +4,12 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 const pageTitles = {
     '/header': 'ヘッダ', /*記載例*/
-    /*TODO: ログイン画面、マイページ画面以外を追加する。*/
+    '/mypage': 'マイページ',
+    '/stocks': '銘柄一覧',
+    '/admin': '管理者',
+    '/stocks/': '銘柄詳細',
 }
-/*TODO: 銘柄詳細のURLを確認*/
+
 function getTitle(pathname) {
     if (pageTitles[pathname]) return pageTitles[pathname];
     if (pathname.startsWith('/stocks/')) return '株価詳細';
@@ -26,7 +29,7 @@ function Header() {
     <header className='header-top'>
         <div className='header-title'>{title}</div>
         <div className='header-link'>
-            /*TODO: マイページのリンク要確認*/
+            {/* TODO: マイページのリンク要確認 */}
             <Link to='/mypage'>{userName}</Link>
             <button 
                 className='logout-btn'

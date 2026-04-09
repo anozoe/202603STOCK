@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react'
 import { getErrorMessage } from '../utils/errorUtil';
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/LoginRegister.css";
-import { loginApi } from "../API/LoginRegisterApi";
+import { loginApi } from "../api/LoginRegisterApi"
 import EmailField from '../components/EmailField';
 import PasswordField from '../components/PasswordField';
 
@@ -43,7 +43,7 @@ function LoginPage() {
       localStorage.setItem("loginUserRole", user.role);
       
       //TODO: 正確な遷移先のパスを入れる
-      if (user.role === "管理者") {
+      if (user.role === 2) {
         navigate("/admin");
       } else {
         navigate("/users");

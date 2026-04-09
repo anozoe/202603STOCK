@@ -1,4 +1,4 @@
-import { fetchJson } from "../API/LoginRegisterApi";
+import { fetchJson } from "../api/LoginRegisterApi";
 import "../App.css";
 import "../styles/LoginRegister.css";
 import { useRef, useState } from "react";
