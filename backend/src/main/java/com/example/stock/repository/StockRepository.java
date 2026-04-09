@@ -1,6 +1,8 @@
 package com.example.stock.repository;
 
 import com.example.stock.entity.Stock;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -15,4 +17,12 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
     List<Stock> findByIdIn(List<Long> ids);
 
     boolean existsByTickerCodeAndIdNot(String tickerCode, Long id);
+
+    Page<Stock> findAllByOrderByIdAsc(Pageable pageable);
+
+    Page<Stock> findByTickerCodeContainingIgnoreCaseOrStockNameContainingIgnoreCaseOrderByIdAsc(
+            String tickerCodeKeyword,
+            String stockNameKeyword,
+            Pageable pageable
+    );
 }

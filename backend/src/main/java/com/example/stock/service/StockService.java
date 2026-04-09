@@ -56,8 +56,20 @@ public class StockService {
     @Transactional(readOnly = true)
     public StockListResponse getStocks(String keyword, int page, int size) {
         int pageIndex = Math.max(page, 0);
+        String trimmedKeyword = keyword == null ? "" : keyword.trim();
 
-        Page<Stock> result = stockRepository.findAll(PageRequest.of(pageIndex, size));
+        Page<Stock> result;
+        if (trimmedKeyword.isEmpty()) {
+            result = stockRepository.findAllByOrderByIdAsc(
+                    PageRequest.of(pageIndex, size)
+            );
+        } else {
+            result = stockRepository.findByTickerCodeContainingIgnoreCaseOrStockNameContainingIgnoreCaseOrderByIdAsc(
+                    trimmedKeyword,
+                    trimmedKeyword,
+                    PageRequest.of(pageIndex, size)
+            );
+        }
 
         int currentFavoriteCount = userFavoriteRepository.countByUserId(BusinessConstants.LOGIN_USER_ID);
 
@@ -79,7 +91,7 @@ public class StockService {
 
         return new StockListResponse(
                 Math.toIntExact(result.getTotalElements()),
-                page,
+                pageIndex,
                 size,
                 result.getTotalPages(),
                 currentFavoriteCount,
@@ -115,7 +127,7 @@ public class StockService {
 
         return new FavoriteStockListResponse(
                 Math.toIntExact(result.getTotalElements()),
-                page,
+                pageIndex,
                 size,
                 result.getTotalPages(),
                 currentFavoriteCount,

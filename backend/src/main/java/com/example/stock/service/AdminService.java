@@ -15,6 +15,7 @@ import com.example.stock.repository.StockRepository;
 import com.example.stock.repository.UserFavoriteRepository;
 import com.example.stock.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,11 +36,15 @@ public class AdminService {
 
     @Transactional(readOnly = true)
     public AdminStockListResponse getStocks(int page, int size) {
-        var result = stockRepository.findAll(PageRequest.of(page, size));
+        int pageIndex = Math.max(page, 0);
+
+        Page<Stock> result = stockRepository.findAllByOrderByIdAsc(
+                PageRequest.of(pageIndex, size)
+        );
 
         return new AdminStockListResponse(
-                (int)stockRepository.count(),
-                page,
+                (int) result.getTotalElements(),
+                pageIndex,
                 size,
                 result.getTotalPages(),
                 result.getContent().stream()
