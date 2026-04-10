@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import StockListTable from "../components/StockListTable";
 import Pagination from "../components/Pagination";
 import {
@@ -8,8 +8,6 @@ import {
   removeFavorite,
 } from "../api/userApi";
 import "../styles/MyPage.css";
-import UserNameField from "../components/UserNameField";
-import EmailField from "../components/EmailField";
 import Header from "../components/Header";
 
 const PAGE_SIZE = 20;
@@ -76,7 +74,7 @@ function MyPage() {
       const favoriteRes = await fetchMyFavorites(0, PAGE_SIZE);
       setFavoriteData(favoriteRes.data);
     } catch (error) {
-      setMessage(error.message);
+      setMessage(error.message || "取得に失敗しました。");
     }
   }
 
@@ -85,16 +83,11 @@ function MyPage() {
       const res = await fetchMyFavorites(page, PAGE_SIZE);
       setFavoriteData(res.data);
     } catch (error) {
-      setMessage(error.message);
+      setMessage(error.message || "取得に失敗しました。");
     }
   }
 
-  const userNameRef = useRef();
-  const emailRef = useRef();
   async function handleUpdate() {
-    const isUserNameValid = userNameRef.current.validate();
-    const isEmailValid = emailRef.current.validate();
-    if (!isUserNameValid || !isEmailValid) return;
     const normalizedUserName = normalizeUserName(form.userName);
     const trimmedEmail = form.email.trim();
 
@@ -123,7 +116,7 @@ function MyPage() {
       setMode("display");
       setMessage(res.message || "更新しました。");
     } catch (error) {
-      setMessage(error.message);
+      setMessage(error.message || "更新に失敗しました。");
     }
   }
 
@@ -133,13 +126,13 @@ function MyPage() {
       setMessage(res.message || "お気に入り解除しました。");
       await loadFavorites(currentPage);
     } catch (error) {
-      setMessage(error.message);
+      setMessage(error.message || "お気に入り解除に失敗しました。");
     }
   }
 
   return (
     <div className="mypage-screen">
-      <Header/>
+      <Header />
 
       {message && <div className="page-message">{message}</div>}
 
@@ -147,13 +140,15 @@ function MyPage() {
         {mode === "display" ? (
           <>
             <div className="mypage-display-row">
-              <div className="mypage-display-label">ユーザ名:</div>
+              <div className="mypage-display-label">ユーザ名</div>
               <div className="mypage-display-value">{userInfo.userName}</div>
             </div>
+
             <div className="mypage-display-row">
-              <div className="mypage-display-label">メールアドレス:</div>
+              <div className="mypage-display-label">メールアドレス</div>
               <div className="mypage-display-value">{userInfo.email}</div>
             </div>
+
             <div className="mypage-button-area">
               <button
                 type="button"
@@ -170,18 +165,46 @@ function MyPage() {
           </>
         ) : (
           <>
-            <UserNameField
-              ref={userNameRef}
-              value={form.userName}
-              onChange={(value) => setForm((prev) => ({ ...prev, userName: value }))}
-              placeholder="ユーザ名"
-            />
-            <EmailField
-              ref={emailRef}
-              value={form.email}
-              onChange={(value) => setForm((prev) => ({ ...prev, email: value }))}
-              placeholder="メールアドレス"
-            />
+            <div className="input-row">
+              <div className="input-label">ユーザ名</div>
+              <div className="input-body">
+                <input
+                  type="text"
+                  className="input-field"
+                  value={form.userName}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, userName: e.target.value }))
+                  }
+                  placeholder="ユーザ名"
+                />
+                <div className="input-error-area">
+                  {errors.userName && (
+                    <div className="input-error-text">{errors.userName}</div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="input-row">
+              <div className="input-label">メールアドレス</div>
+              <div className="input-body">
+                <input
+                  type="text"
+                  className="input-field"
+                  value={form.email}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, email: e.target.value }))
+                  }
+                  placeholder="メールアドレス"
+                />
+                <div className="input-error-area">
+                  {errors.email && (
+                    <div className="input-error-text">{errors.email}</div>
+                  )}
+                </div>
+              </div>
+            </div>
+
             <div className="mypage-button-area">
               <button
                 type="button"

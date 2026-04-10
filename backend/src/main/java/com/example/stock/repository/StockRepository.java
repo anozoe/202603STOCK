@@ -18,9 +18,9 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
 
     boolean existsByTickerCodeAndIdNot(String tickerCode, Long id);
 
-    Page<Stock> findAllByOrderByIdAsc(Pageable pageable);
+    Page<Stock> findAllByOrderByDisplayOrderAscIdAsc(Pageable pageable);
 
-    Page<Stock> findByTickerCodeContainingIgnoreCaseOrStockNameContainingIgnoreCaseOrderByIdAsc(
+    Page<Stock> findByTickerCodeContainingIgnoreCaseOrStockNameContainingIgnoreCaseOrderByDisplayOrderAscIdAsc(
             String tickerCodeKeyword,
             String stockNameKeyword,
             Pageable pageable

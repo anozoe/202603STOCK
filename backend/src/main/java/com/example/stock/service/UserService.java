@@ -23,7 +23,6 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-
     @Transactional(readOnly = true)
     public UserInfoResponse getMyInfo() {
         User user = getLoginUser();
@@ -56,42 +55,71 @@ public class UserService {
         return toUserInfoResponse(user);
     }
 
+    @Transactional
+    public void register(UserRegisterRequest request) {
+        String name = request.getName() == null ? "" : request.getName().trim();
+        String email = request.getEmail() == null ? "" : request.getEmail().trim();
+        String password = request.getPassword();
+
+        userRepository.findByEmail(email)
+                .ifPresent(u -> {
+                    throw new BusinessException("E005", "メールアドレス");
+                });
+
+        User user = new User();
+        user.setName(name);
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRole(RoleCode.GENERAL_USER);
+        user.setCreatedAt(LocalDateTime.now());
+        user.setCreatedBy("system");
+        user.setUpdatedAt(LocalDateTime.now());
+        user.setUpdatedBy("system");
+
+        try {
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new BusinessException("E006");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public User login(UserLoginRequest request) {
+        String email = request.getEmail() == null ? "" : request.getEmail().trim();
+        String rawPassword = request.getPassword();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessException("E010", "ユーザ"));
+
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            throw new BusinessException("E002", "パスワード");
+        }
+
+        return user;
+    }
+
+    @Transactional(readOnly = true)
+    public UserInfoResponse loginUserInfo(UserLoginRequest request) {
+        User user = login(request);
+        return toUserInfoResponse(user);
+    }
+
     private User getLoginUser() {
         return userRepository.findById(BusinessConstants.LOGIN_USER_ID)
                 .orElseThrow(() -> new BusinessException("E010", "ユーザ"));
     }
 
     private UserInfoResponse toUserInfoResponse(User user) {
+        String roleName = user.getRole() != null && user.getRole() == RoleCode.ADMIN
+                ? "管理者"
+                : "一般ユーザ";
+
         return new UserInfoResponse(
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
-                user.getRole() != null && user.getRole() == RoleCode.ADMIN ? "管理者" : "一般ユーザ",
+                roleName,
                 user.getUpdatedAt() == null ? null : user.getUpdatedAt().toString()
         );
-    }
-
-    @Transactional
-    public void register(UserRegisterRequest request) {
-        userRepository.findByEmail(request.getEmail())
-            .ifPresent(u -> { throw new BusinessException("E005", "メールアドレス"); });
-
-        User user = new User();
-        user.setName(request.getName());
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setCreatedAt(LocalDateTime.now());
-        user.setCreatedBy("system");
-        userRepository.save(user);
-    }
-
-    public User login(UserLoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
-            .orElseThrow(() -> new BusinessException("E010", "ユーザ"));
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new BusinessException("E002", "パスワード");
-        }
-        return user;
     }
 }

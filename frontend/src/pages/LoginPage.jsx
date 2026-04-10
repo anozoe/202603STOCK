@@ -1,12 +1,10 @@
-import React, { useRef, useState } from 'react'
-import { getErrorMessage } from '../utils/errorUtil';
+import React, { useRef, useState } from "react";
+import { getErrorMessage } from "../utils/errorUtil";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/LoginRegister.css";
-import { loginApi } from "../api/LoginRegisterApi"
-import EmailField from '../components/EmailField';
-import PasswordField from '../components/PasswordField';
-
-
+import { loginApi } from "../api/LoginRegisterApi";
+import EmailField from "../components/EmailField";
+import PasswordField from "../components/PasswordField";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -14,13 +12,11 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  
   const [loginError, setLoginError] = useState("");
   const [connectError, setConnectError] = useState("");
 
   const emailRef = useRef();
   const passwordRef = useRef();
-
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -37,16 +33,15 @@ function LoginPage() {
       const response = await loginApi(email, password);
       const user = response.data;
 
-      localStorage.setItem("loginUserId", user.id);
-      localStorage.setItem("loginUserName", user.name);
+      localStorage.setItem("loginUserId", user.userId);
+      localStorage.setItem("loginUserName", user.userName);
       localStorage.setItem("loginUserEmail", user.email);
       localStorage.setItem("loginUserRole", user.role);
-      
-      //TODO: 正確な遷移先のパスを入れる
-      if (user.role === 2) {
+
+      if (user.role === "管理者") {
         navigate("/admin");
       } else {
-        navigate("/users");
+        navigate("/stocks");
       }
     } catch (error) {
       console.error(error);
@@ -59,7 +54,7 @@ function LoginPage() {
   };
 
   return (
-  <div className="auth-container">
+    <div className="auth-container">
       <div className="auth-box">
         <h1 className="auth-title">ログイン</h1>
 
@@ -77,17 +72,17 @@ function LoginPage() {
 
         <form onSubmit={handleLogin}>
           <EmailField
-              ref={emailRef}
-              value={email}
-              onChange={setEmail}
-              placeholder="メールアドレスを入力"
+            ref={emailRef}
+            value={email}
+            onChange={setEmail}
+            placeholder="メールアドレスを入力"
           />
 
           <PasswordField
-              ref={passwordRef}
-              value={password}
-              onChange={setPassword}
-              placeholder="パスワードを入力"
+            ref={passwordRef}
+            value={password}
+            onChange={setPassword}
+            placeholder="パスワードを入力"
           />
 
           <button id="login_button" type="submit" className="main-button">
@@ -105,6 +100,4 @@ function LoginPage() {
   );
 }
 
-
-
-export default LoginPage
+export default LoginPage;
