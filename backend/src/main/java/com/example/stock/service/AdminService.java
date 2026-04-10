@@ -15,11 +15,11 @@ import com.example.stock.repository.StockRepository;
 import com.example.stock.repository.UserFavoriteRepository;
 import com.example.stock.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -31,15 +31,19 @@ public class AdminService {
     private final StockRepository stockRepository;
     private final UserRepository userRepository;
     private final UserFavoriteRepository userFavoriteRepository;
-    private final ExternalStockLookupService externalStockLookupService;
+    private final StockMarketSyncService stockMarketSyncService;
 
     @Transactional(readOnly = true)
     public AdminStockListResponse getStocks(int page, int size) {
-        var result = stockRepository.findAllByOrderByDisplayOrderAscIdAsc(PageRequest.of(page, size));
+        int pageIndex = Math.max(page, 0);
+
+        Page<Stock> result = stockRepository.findAllByOrderByDisplayOrderAscIdAsc(
+                PageRequest.of(pageIndex, size)
+        );
 
         return new AdminStockListResponse(
-                stockRepository.countBy(),
-                page,
+                (int) result.getTotalElements(),
+                pageIndex,
                 size,
                 result.getTotalPages(),
                 result.getContent().stream()
@@ -57,29 +61,17 @@ public class AdminService {
 
     @Transactional
     public void createStock(AdminStockUpsertRequest req) {
-        if (stockRepository.countBy() >= BusinessConstants.MAX_ADMIN_STOCK_COUNT) {
+        if (stockRepository.count() >= BusinessConstants.MAX_ADMIN_STOCK_COUNT) {
             throw new BusinessException("E012", "銘柄", "登録");
         }
 
-        validateStockRequest(req, null);
+        String tickerCode = req.getTickerCode().trim().toUpperCase();
 
-        Stock stock = new Stock();
-        setStock(stock, req);
-
-        if (stock.getPriceChange() == null) {
-            stock.setPriceChange(BigDecimal.ZERO);
-        }
-        if (stock.getChangeRate() == null) {
-            stock.setChangeRate(BigDecimal.ZERO);
-        }
-        if (stock.getMarketCap() == null) {
-            stock.setMarketCap(0L);
-        }
-        if (stock.getFetchedAt() == null) {
-            stock.setFetchedAt(LocalDateTime.now());
+        if (stockRepository.findByTickerCode(tickerCode).isPresent()) {
+            throw new BusinessException("E005", "銘柄コード");
         }
 
-        stockRepository.save(stock);
+        stockMarketSyncService.syncByTicker(tickerCode, null);
     }
 
     @Transactional
@@ -88,27 +80,16 @@ public class AdminService {
             throw new BusinessException("E001", "ID");
         }
 
-        Stock stock = stockRepository.findById(req.getId())
+        Stock existing = stockRepository.findById(req.getId())
                 .orElseThrow(() -> new BusinessException("E010", "銘柄"));
 
-        validateStockRequest(req, req.getId());
+        String tickerCode = req.getTickerCode().trim().toUpperCase();
 
-        setStock(stock, req);
-
-        if (stock.getPriceChange() == null) {
-            stock.setPriceChange(BigDecimal.ZERO);
-        }
-        if (stock.getChangeRate() == null) {
-            stock.setChangeRate(BigDecimal.ZERO);
-        }
-        if (stock.getMarketCap() == null) {
-            stock.setMarketCap(0L);
-        }
-        if (stock.getFetchedAt() == null) {
-            stock.setFetchedAt(LocalDateTime.now());
+        if (stockRepository.existsByTickerCodeAndIdNot(tickerCode, req.getId())) {
+            throw new BusinessException("E005", "銘柄コード");
         }
 
-        stockRepository.save(stock);
+        stockMarketSyncService.syncByTicker(tickerCode, existing.getDisplayOrder());
     }
 
     @Transactional
@@ -118,6 +99,7 @@ public class AdminService {
 
         userFavoriteRepository.deleteByStockId(stock.getId());
         stockRepository.delete(stock);
+        normalizeDisplayOrder();
     }
 
     @Transactional
@@ -158,36 +140,21 @@ public class AdminService {
 
         user.setDeletedAt(LocalDateTime.now());
         user.setDeletedBy("admin");
-
         userRepository.save(user);
     }
 
-    private void setStock(Stock stock, AdminStockUpsertRequest req) {
-        stock.setTickerCode(req.getTickerCode().trim());
-        stock.setStockName(req.getStockName().trim());
-        stock.setMarket(req.getMarket());
-        stock.setCurrentPrice(req.getCurrentPrice());
-        stock.setPriceChange(req.getPriceChange());
-        stock.setChangeRate(req.getChangeRate());
-        stock.setMarketCap(req.getMarketCap());
-        stock.setDisplayOrder(req.getDisplayOrder());
-    }
+    private void normalizeDisplayOrder() {
+        List<Stock> allStocks = stockRepository.findAll().stream()
+                .sorted(Comparator
+                        .comparing((Stock s) -> s.getDisplayOrder() == null ? Integer.MAX_VALUE : s.getDisplayOrder())
+                        .thenComparing(Stock::getId))
+                .toList();
 
-    private void validateStockRequest(AdminStockUpsertRequest req, Long id) {
-        String tickerCode = req.getTickerCode() == null ? "" : req.getTickerCode().trim();
-
-        if (id == null) {
-            stockRepository.findByTickerCode(tickerCode)
-                    .ifPresent(s -> {
-                        throw new BusinessException("E005", "銘柄コード");
-                    });
-        } else if (stockRepository.existsByTickerCodeAndIdNot(tickerCode, id)) {
-            throw new BusinessException("E005", "銘柄コード");
+        int order = 1;
+        for (Stock stock : allStocks) {
+            stock.setDisplayOrder(order++);
         }
-
-        if (!externalStockLookupService.existsTicker(tickerCode)) {
-            throw new BusinessException("E002", "銘柄コード");
-        }
+        stockRepository.saveAll(allStocks);
     }
 
     private UserInfoResponse toUserInfoResponse(User user) {

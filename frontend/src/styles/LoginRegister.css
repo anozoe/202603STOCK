@@ -1,30 +1,31 @@
-.auth-container{
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 32px 16px;
+  background: linear-gradient(180deg, #ffffff 0%, #faf7f2 100%);
 }
 
-.auth-box{
-  width:420px;
-  background:white;
-  padding:36px;
-  border-radius:10px;
-  border-top:8px solid #aaa;
-  box-shadow:0 0 10px rgba(0,0,0,0.15);
+.auth-box {
+  width: min(100%, 420px);
+  padding: 36px;
+  border-radius: var(--radius-lg);
+  border-top: 8px solid var(--color-primary);
+  box-shadow: var(--shadow-card);
 }
 
-.title_register{
-  text-align:center;
-  font-size:30px;
-  margin-bottom:10px;
+.title_register {
+  margin: 0 0 10px;
+  text-align: center;
+  font-size: 30px;
+  font-weight: 700;
 }
 
-.register_guide{
-  font-size:13px;
-  color:#666;
-  margin-bottom:20px;
-  line-height:1.5;
+.register_guide {
+  margin-bottom: 20px;
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 .input-field {
@@ -34,70 +35,28 @@
 }
 
 .input-field label {
-  font-weight: bold;
   margin-bottom: 6px;
 }
 
-.input-field input {
-  height: 42px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 0 10px;
-  font-size: 15px;
+.link-area {
+  margin-top: 20px;
+  text-align: center;
 }
 
-.input-field input:focus{
-  outline:none;
-  border-color:#ffab40;
-  box-shadow:0 0 0 2px rgba(255,171,64,0.2);
-}
-
-.main-button{
-  width:100%;
-  height:46px;
-  border:none;
-  border-radius:8px;
-  background:#aaa;
-  color:white;
-  font-size:18px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.main-button:hover{
-  background:#888;
-}
-
-.sub-link{
-  color:#ff8c00;
-  text-decoration:none;
-  font-weight:bold;
-}
-
-.sub-link:hover{
-  text-decoration:underline;
-}
-
-.link-area{
-  text-align:center;
-  margin-top:20px;
-}
-
-.sub-button{
-  padding: 10px 60px;
-  border: none;
-  border-radius: 8px;
-  background-color: #fff;
-  color:#ff8c00;
-  font-size: 16px;
-  font-weight:bold;
-  cursor: pointer;
-}
-
-.sub-link:hover{
-  text-decoration:underline;
+.sub-button {
+  padding-inline: 20px;
 }
 
 .error-text {
-  color: red;
+  margin-top: 6px;
+}
+
+.auth-box .error-summary {
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border: 1px solid #f5c2c0;
+  border-radius: var(--radius-sm);
+  background: #fff5f5;
+  color: var(--color-danger-border);
+  font-size: 13px;
 }

@@ -16,4 +16,6 @@ public class StockOverviewResponse {
     private BigDecimal pbr;
     private BigDecimal roe;
     private BigDecimal dividendYield;
+    private Long volume;
+    private Long marketCap;
 }

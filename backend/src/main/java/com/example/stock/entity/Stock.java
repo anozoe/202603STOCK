@@ -24,6 +24,9 @@ public class Stock {
     @Column(name = "market", nullable = false)
     private Integer market;
 
+    @Column(name = "market_status", length = 10)
+    private String marketStatus;
+
     @Column(name = "current_price", nullable = false, precision = 18, scale = 2)
     private BigDecimal currentPrice;
 
@@ -35,6 +38,33 @@ public class Stock {
 
     @Column(name = "market_cap")
     private Long marketCap;
+
+    @Column(name = "open_price", precision = 18, scale = 2)
+    private BigDecimal openPrice;
+
+    @Column(name = "high_price", precision = 18, scale = 2)
+    private BigDecimal highPrice;
+
+    @Column(name = "low_price", precision = 18, scale = 2)
+    private BigDecimal lowPrice;
+
+    @Column(name = "close_price", precision = 18, scale = 2)
+    private BigDecimal closePrice;
+
+    @Column(name = "volume")
+    private Long volume;
+
+    @Column(name = "pbr", precision = 12, scale = 4)
+    private BigDecimal pbr;
+
+    @Column(name = "per", precision = 12, scale = 4)
+    private BigDecimal per;
+
+    @Column(name = "roe", precision = 12, scale = 4)
+    private BigDecimal roe;
+
+    @Column(name = "dividend_yield", precision = 12, scale = 4)
+    private BigDecimal dividendYield;
 
     @Column(name = "display_order")
     private Integer displayOrder;
