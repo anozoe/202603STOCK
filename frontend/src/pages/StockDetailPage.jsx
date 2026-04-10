@@ -426,7 +426,6 @@ function MovingAverageChart({ data }) {
     </svg>
   );
 }
-
 function StockDetailPage() {
   const { tickerCode } = useParams();
   const navigate = useNavigate();
