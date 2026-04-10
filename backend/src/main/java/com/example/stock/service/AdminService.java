@@ -22,7 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -103,22 +105,45 @@ public class AdminService {
     }
 
     @Transactional
-    public void reorder(AdminStockReorderRequest req) {
-        if (req.getStockIds() == null || req.getStockIds().isEmpty()) {
-            throw new BusinessException("E001", "並び順");
-        }
-
-        List<Stock> stocks = stockRepository.findByIdIn(req.getStockIds()).stream()
-                .sorted(Comparator.comparingInt(s -> req.getStockIds().indexOf(s.getId())))
-                .toList();
-
-        int order = 1;
-        for (Stock stock : stocks) {
-            stock.setDisplayOrder(order++);
-        }
-
-        stockRepository.saveAll(stocks);
+public void reorder(AdminStockReorderRequest req) {
+    if (req == null || req.getStockIds() == null || req.getStockIds().isEmpty()) {
+        throw new BusinessException("E001", "並び順");
     }
+
+    List<Long> stockIds = req.getStockIds();
+    System.out.println("reorder start");
+    System.out.println("stockIds = " + stockIds);
+
+    List<Stock> stocks = stockRepository.findAllById(stockIds);
+    System.out.println("stocks.size = " + stocks.size());
+    System.out.println("stocks ids = " + stocks.stream().map(Stock::getId).toList());
+
+    if (stocks.size() != stockIds.size()) {
+        throw new IllegalStateException(
+                "取得した銘柄件数が一致しません。 request=" + stockIds
+                        + ", actual=" + stocks.stream().map(Stock::getId).toList()
+        );
+    }
+
+    Map<Long, Integer> orderMap = new HashMap<>();
+    for (int i = 0; i < stockIds.size(); i++) {
+        orderMap.put(stockIds.get(i), i + 1);
+    }
+    System.out.println("orderMap = " + orderMap);
+
+    for (Stock stock : stocks) {
+        Integer displayOrder = orderMap.get(stock.getId());
+        if (displayOrder == null) {
+            throw new IllegalStateException("displayOrder が見つかりません。 stockId=" + stock.getId());
+        }
+        stock.setDisplayOrder(displayOrder);
+    }
+
+    stockRepository.saveAll(stocks);
+    stockRepository.flush();
+
+    System.out.println("reorder success");
+}
 
     @Transactional(readOnly = true)
     public AdminUserListResponse getUsers(int page, int size) {
