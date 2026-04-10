@@ -1,0 +1,671 @@
+:root {
+  --font-family-base: Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f8f8f8;
+  --color-surface-muted: #f5f5f5;
+  --color-surface-hover: #fafafa;
+
+  --color-text: #222222;
+  --color-text-muted: #666666;
+  --color-text-inverse: #ffffff;
+
+  --color-border: #cccccc;
+  --color-border-strong: #999999;
+  --color-border-input: #bdbdbd;
+
+  --color-primary: #f39800;
+  --color-primary-hover: #dd8900;
+  --color-primary-border: #d97a00;
+
+  --color-secondary: #e0e0e0;
+  --color-secondary-hover: #d2d2d2;
+  --color-secondary-border: #999999;
+
+  --color-danger: #ef5350;
+  --color-danger-hover: #e24643;
+  --color-danger-border: #c62828;
+
+  --color-table-head: #5b5b5b;
+  --color-overlay: rgba(0, 0, 0, 0.35);
+  --color-focus: rgba(243, 152, 0, 0.22);
+
+  --color-positive: #d93025;
+  --color-negative: #188038;
+  --color-warning-bg: #fff3e0;
+
+  --color-link: #ff8c00;
+  --color-star-off: #b0b0b0;
+  --color-star-on: #f2b600;
+
+  --shadow-card: 0 0 10px rgba(0, 0, 0, 0.15);
+
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-9: 36px;
+  --space-10: 40px;
+
+  --page-width: 1120px;
+
+  --control-height-sm: 32px;
+  --control-height-md: 34px;
+  --control-height-lg: 36px;
+  --control-height-xl: 42px;
+  --control-height-xxl: 46px;
+
+  --button-font-sm: 14px;
+  --button-font-md: 16px;
+  --button-font-lg: 18px;
+
+  --transition-fast: 0.16s ease;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-family-base);
+  line-height: 1.5;
+}
+
+img {
+  max-width: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    opacity var(--transition-fast);
+}
+
+button:disabled,
+input:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+a {
+  color: inherit;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  border: 0;
+}
+
+/* --------------------------------
+ * Layout / Containers
+ * -------------------------------- */
+
+.app-screen,
+.admin-screen,
+.stock-list-screen,
+.stock-detail-screen {
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+.page-shell,
+.admin-page-body,
+.stock-list-page-body,
+.stock-detail-page-body,
+.mypage-screen {
+  width: min(calc(100% - 48px), var(--page-width));
+  margin: 24px auto;
+}
+
+.section-card,
+.mypage-user-box,
+.overview-card,
+.admin-modal,
+.auth-box {
+  background: var(--color-surface);
+}
+
+.page-title,
+.mypage-title,
+.admin-section-title,
+.stock-list-component-title,
+.overview-card-title,
+.chart-placeholder-title {
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.page-title,
+.mypage-title {
+  font-size: 30px;
+  margin-bottom: 24px;
+}
+
+.page-message,
+.admin-message {
+  margin-bottom: 14px;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.text-muted,
+.register_guide,
+.empty-cell,
+.admin-empty-cell {
+  color: var(--color-text-muted);
+}
+
+/* --------------------------------
+ * Header
+ * -------------------------------- */
+
+.common-header,
+.header-top {
+  min-height: 56px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: 0 24px;
+}
+
+.common-header-title,
+.header-title {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.common-header-right,
+.header-link {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-link-button,
+.header-user-link,
+.stock-name-link {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.header-link-button:hover,
+.header-user-link:hover,
+.stock-name-link:hover {
+  opacity: 0.75;
+}
+
+/* --------------------------------
+ * Buttons - 共通パターン
+ * -------------------------------- */
+
+.btn,
+.main-button,
+.sub-button,
+.logout-btn,
+.stock-search-button,
+.back-button,
+.mypage-button,
+.admin-primary-button,
+.admin-action-button,
+.admin-danger-button,
+.page-button,
+.detail-tab-row button,
+.chart-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  padding: 0 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:focus-visible,
+.main-button:focus-visible,
+.sub-button:focus-visible,
+.logout-btn:focus-visible,
+.stock-search-button:focus-visible,
+.back-button:focus-visible,
+.mypage-button:focus-visible,
+.admin-primary-button:focus-visible,
+.admin-action-button:focus-visible,
+.admin-danger-button:focus-visible,
+.page-button:focus-visible,
+.detail-tab-row button:focus-visible,
+.chart-toolbar button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-focus);
+}
+
+.btn--primary,
+.btn-orange,
+.logout-btn,
+.mypage-button-update,
+.admin-primary-button,
+.main-button {
+  border-color: var(--color-primary-border);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.btn--primary:hover,
+.btn-orange:hover,
+.logout-btn:hover,
+.mypage-button-update:hover,
+.admin-primary-button:hover,
+.main-button:hover {
+  background: var(--color-primary-hover);
+}
+
+.btn--secondary,
+.btn-gray,
+.stock-search-button,
+.back-button,
+.mypage-button-edit,
+.admin-action-button,
+.detail-tab-row button,
+.chart-toolbar button,
+.page-button {
+  border-color: var(--color-secondary-border);
+  background: var(--color-secondary);
+  color: var(--color-text);
+}
+
+.btn--secondary:hover,
+.btn-gray:hover,
+.stock-search-button:hover,
+.back-button:hover,
+.mypage-button-edit:hover,
+.admin-action-button:hover,
+.detail-tab-row button:hover,
+.chart-toolbar button:hover,
+.page-button:hover {
+  background: var(--color-secondary-hover);
+}
+
+.btn--danger,
+.btn-danger,
+.admin-danger-button {
+  border-color: var(--color-danger-border);
+  background: var(--color-danger);
+  color: var(--color-text-inverse);
+}
+
+.btn--danger:hover,
+.btn-danger:hover,
+.admin-danger-button:hover {
+  background: var(--color-danger-hover);
+}
+
+.btn--ghost,
+.sub-button {
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-link);
+}
+
+.btn--ghost:hover,
+.sub-button:hover {
+  background: rgba(255, 140, 0, 0.08);
+}
+
+.btn--sm,
+.back-button,
+.stock-search-button,
+.detail-tab-row button,
+.chart-toolbar button,
+.page-button,
+.admin-primary-button,
+.admin-action-button,
+.admin-danger-button {
+  min-height: var(--control-height-md);
+  font-size: var(--button-font-sm);
+}
+
+.btn--md,
+.logout-btn,
+.mypage-button {
+  min-height: var(--control-height-lg);
+  font-size: var(--button-font-sm);
+}
+
+.btn--lg,
+.sub-button {
+  min-height: var(--control-height-xl);
+  font-size: var(--button-font-md);
+}
+
+.btn--xl,
+.main-button {
+  min-height: var(--control-height-xxl);
+  font-size: var(--button-font-lg);
+}
+
+.main-button {
+  width: 100%;
+}
+
+.page-button {
+  min-width: 34px;
+  padding-inline: 10px;
+  background: var(--color-surface);
+  border-color: var(--color-border-input);
+}
+
+.page-button.active,
+.page-button:disabled,
+.detail-tab-row button.active,
+.chart-toolbar button.active {
+  border-color: var(--color-primary-border);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  cursor: default;
+}
+
+.logout-btn {
+  min-width: 104px;
+}
+
+.admin-primary-button {
+  min-width: 90px;
+}
+
+.admin-action-button,
+.admin-danger-button {
+  min-width: 80px;
+}
+
+.mypage-button {
+  min-width: 86px;
+}
+
+.sub-link {
+  color: var(--color-link);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.sub-link:hover {
+  text-decoration: underline;
+}
+
+/* --------------------------------
+ * Form Controls
+ * -------------------------------- */
+
+.form-label,
+.mypage-display-label,
+.input-label,
+.admin-modal-label,
+.input-field label {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.form-input,
+.stock-search-input,
+.admin-modal-input,
+.input-field input,
+.mypage-user-box .input-field {
+  width: 100%;
+  min-height: var(--control-height-xl);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-sm);
+  padding: 0 12px;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.form-input:focus,
+.stock-search-input:focus,
+.admin-modal-input:focus,
+.input-field input:focus,
+.mypage-user-box .input-field:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-focus);
+}
+
+.form-input.has-error,
+.stock-search-input.has-error,
+.admin-modal-input.has-error,
+.input-field input.has-error,
+.mypage-user-box .input-field.has-error {
+  border-color: var(--color-danger-border);
+}
+
+.form-error,
+.input-error,
+.error-text,
+.admin-inline-error,
+.admin-modal-error {
+  color: var(--color-danger-border);
+}
+
+.input-error,
+.error-text,
+.admin-inline-error,
+.admin-modal-error {
+  font-size: 12px;
+}
+
+.input-error-area,
+.admin-inline-error,
+.admin-modal-error {
+  min-height: 20px;
+}
+
+/* --------------------------------
+ * Tables / Lists
+ * -------------------------------- */
+
+.data-table,
+.stock-list-table,
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.data-table th,
+.data-table td,
+.stock-list-table th,
+.stock-list-table td,
+.admin-table th,
+.admin-table td {
+  border: 1px solid var(--color-border);
+  padding: 10px 8px;
+  font-size: 14px;
+  background: var(--color-surface);
+}
+
+.data-table th,
+.stock-list-table th,
+.admin-table th {
+  background: var(--color-table-head);
+  color: var(--color-text-inverse);
+  text-align: left;
+  font-weight: 700;
+}
+
+.stock-list-component-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.stock-list-component-title {
+  font-size: 24px;
+}
+
+.stock-list-component-favorite-count,
+.admin-count-text {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.favorite-cell,
+.admin-drag-cell {
+  text-align: center;
+}
+
+.favorite-star {
+  border: none;
+  background: none;
+  color: var(--color-star-off);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.favorite-star.active {
+  color: var(--color-star-on);
+}
+
+.plus-value {
+  color: var(--color-positive);
+  font-weight: 700;
+}
+
+.minus-value {
+  color: var(--color-negative);
+  font-weight: 700;
+}
+
+.empty-cell,
+.admin-empty-cell {
+  text-align: center;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+/* --------------------------------
+ * Common components
+ * -------------------------------- */
+
+.loading-screen {
+  padding: 24px;
+}
+
+.modal-overlay,
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.admin-modal {
+  width: min(100%, 520px);
+  border: 1px solid var(--color-border);
+}
+
+.admin-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.admin-modal-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.admin-close-button {
+  border: none;
+  background: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.admin-modal-body {
+  padding: 18px;
+}
+
+.admin-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.page-message {
+  margin-bottom: 14px;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .page-shell,
+  .admin-page-body,
+  .stock-list-page-body,
+  .stock-detail-page-body,
+  .mypage-screen {
+    width: min(calc(100% - 24px), var(--page-width));
+    margin: 16px auto 24px;
+  }
+
+  .common-header,
+  .header-top {
+    padding-inline: 16px;
+  }
+}

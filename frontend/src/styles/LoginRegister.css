@@ -1,0 +1,62 @@
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 32px 16px;
+  background: linear-gradient(180deg, #ffffff 0%, #faf7f2 100%);
+}
+
+.auth-box {
+  width: min(100%, 420px);
+  padding: 36px;
+  border-radius: var(--radius-lg);
+  border-top: 8px solid var(--color-primary);
+  box-shadow: var(--shadow-card);
+}
+
+.title_register {
+  margin: 0 0 10px;
+  text-align: center;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.register_guide {
+  margin-bottom: 20px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.input-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.input-field label {
+  margin-bottom: 6px;
+}
+
+.link-area {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.sub-button {
+  padding-inline: 20px;
+}
+
+.error-text {
+  margin-top: 6px;
+}
+
+.auth-box .error-summary {
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border: 1px solid #f5c2c0;
+  border-radius: var(--radius-sm);
+  background: #fff5f5;
+  color: var(--color-danger-border);
+  font-size: 13px;
+}

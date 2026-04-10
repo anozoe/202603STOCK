@@ -1,0 +1,107 @@
+.mypage-screen {
+  min-height: 100vh;
+  background: #fff;
+}
+
+.mypage-page {
+  width: min(1680px, calc(100% - 120px));
+  margin: 0 auto;
+  padding: 24px 0 40px;
+  box-sizing: border-box;
+}
+
+.mypage-user-box {
+  margin-bottom: 28px;
+  padding: 24px 28px;
+  border: 1px solid var(--color-border, #d2d2d2);
+  border-radius: 8px;
+}
+
+.mypage-display-row,
+.input-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+
+.mypage-display-label,
+.input-label {
+  width: 150px;
+  flex-shrink: 0;
+  font-size: 18px;
+  line-height: 40px;
+  font-weight: 700;
+}
+
+.mypage-display-value {
+  flex: 1;
+  min-height: 40px;
+  font-size: 18px;
+  line-height: 40px;
+}
+
+.input-body {
+  flex: 1;
+  max-width: 420px;
+}
+
+.mypage-user-box .input-field {
+  width: 100%;
+  height: 40px;
+  font-size: 16px;
+}
+
+.input-error-area {
+  margin-top: 6px;
+}
+
+.mypage-button-area {
+  display: flex;
+  justify-content: flex-start;
+  gap: 12px;
+  padding-left: 170px;
+  margin-top: 8px;
+}
+
+.mypage-stock-section {
+  margin-top: 24px;
+}
+
+@media (max-width: 1200px) {
+  .mypage-page {
+    width: calc(100% - 48px);
+  }
+}
+
+@media (max-width: 768px) {
+  .mypage-page {
+    width: calc(100% - 24px);
+    padding: 16px 0 28px;
+  }
+
+  .mypage-user-box {
+    padding: 20px 16px;
+  }
+
+  .mypage-display-row,
+  .input-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .mypage-display-label,
+  .input-label {
+    width: 100%;
+    line-height: 1.5;
+  }
+
+  .input-body {
+    max-width: none;
+    width: 100%;
+  }
+
+  .mypage-button-area {
+    padding-left: 0;
+  }
+}

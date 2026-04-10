@@ -1,0 +1,43 @@
+.header-top,
+.common-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.header-title,
+.common-header-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-link,
+.common-header-right {
+  flex-shrink: 0;
+}
+
+.header-user-link,
+.header-link-button {
+  font-weight: 700;
+}
+
+.logout-btn {
+  padding-inline: 20px;
+}
+
+@media (max-width: 640px) {
+  .header-top,
+  .common-header {
+    min-height: auto;
+    flex-wrap: wrap;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .header-link,
+  .common-header-right {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
