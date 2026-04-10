@@ -1,7 +1,13 @@
 package com.example.stock.service;
 
 import com.example.stock.constants.BusinessConstants;
-import com.example.stock.dto.*;
+import com.example.stock.dto.FavoriteStockListResponse;
+import com.example.stock.dto.FavoriteToggleResponse;
+import com.example.stock.dto.StockChartPointResponse;
+import com.example.stock.dto.StockDetailResponse;
+import com.example.stock.dto.StockListItemResponse;
+import com.example.stock.dto.StockListResponse;
+import com.example.stock.dto.StockOverviewResponse;
 import com.example.stock.entity.Stock;
 import com.example.stock.entity.StockPriceHistory;
 import com.example.stock.entity.User;
@@ -31,9 +37,12 @@ public class StockService {
     private final StockPriceHistoryRepository stockPriceHistoryRepository;
     private final UserFavoriteRepository userFavoriteRepository;
     private final UserRepository userRepository;
+    private final CurrentUserService currentUserService;
 
     @Transactional(readOnly = true)
     public StockListResponse getStocks(String keyword, int page, int size) {
+        Long currentUserId = currentUserService.getCurrentUserId();
+
         int pageIndex = Math.max(page, 0);
         String trimmedKeyword = keyword == null ? "" : keyword.trim();
 
@@ -51,7 +60,7 @@ public class StockService {
                     );
         }
 
-        int currentFavoriteCount = userFavoriteRepository.countByUserId(BusinessConstants.LOGIN_USER_ID);
+        int currentFavoriteCount = userFavoriteRepository.countByUserId(currentUserId);
 
         List<StockListItemResponse> items = result.getContent().stream()
                 .map(stock -> new StockListItemResponse(
@@ -63,7 +72,7 @@ public class StockService {
                         stock.getChangeRate(),
                         stock.getMarketCap(),
                         userFavoriteRepository.existsByUserIdAndStockId(
-                                BusinessConstants.LOGIN_USER_ID,
+                                currentUserId,
                                 stock.getId()
                         )
                 ))
@@ -82,14 +91,16 @@ public class StockService {
 
     @Transactional(readOnly = true)
     public FavoriteStockListResponse getFavoriteStocks(int page, int size) {
+        Long currentUserId = currentUserService.getCurrentUserId();
+
         int pageIndex = Math.max(page, 0);
 
         Page<UserFavorite> result = userFavoriteRepository.findByUserIdOrderByStockIdAsc(
-                BusinessConstants.LOGIN_USER_ID,
+                currentUserId,
                 PageRequest.of(pageIndex, size)
         );
 
-        int currentFavoriteCount = userFavoriteRepository.countByUserId(BusinessConstants.LOGIN_USER_ID);
+        int currentFavoriteCount = userFavoriteRepository.countByUserId(currentUserId);
 
         List<StockListItemResponse> items = result.getContent().stream()
                 .map(UserFavorite::getStock)
@@ -162,21 +173,23 @@ public class StockService {
 
     @Transactional
     public FavoriteToggleResponse addFavorite(String tickerCode) {
+        Long currentUserId = currentUserService.getCurrentUserId();
+
         Stock stock = stockRepository.findByTickerCode(tickerCode)
                 .orElseThrow(() -> new BusinessException("E010", "銘柄"));
 
-        int currentFavoriteCount = userFavoriteRepository.countByUserId(BusinessConstants.LOGIN_USER_ID);
+        int currentFavoriteCount = userFavoriteRepository.countByUserId(currentUserId);
         if (currentFavoriteCount >= BusinessConstants.MAX_FAVORITE_COUNT) {
             throw new BusinessException("E012", "お気に入り銘柄", "登録");
         }
 
         boolean exists = userFavoriteRepository.existsByUserIdAndStockId(
-                BusinessConstants.LOGIN_USER_ID,
+                currentUserId,
                 stock.getId()
         );
 
         if (!exists) {
-            User user = userRepository.findById(BusinessConstants.LOGIN_USER_ID)
+            User user = userRepository.findById(currentUserId)
                     .orElseThrow(() -> new BusinessException("E010", "ユーザ"));
 
             UserFavorite favorite = new UserFavorite();
@@ -192,17 +205,19 @@ public class StockService {
 
     @Transactional
     public FavoriteToggleResponse removeFavorite(String tickerCode) {
+        Long currentUserId = currentUserService.getCurrentUserId();
+
         Stock stock = stockRepository.findByTickerCode(tickerCode)
                 .orElseThrow(() -> new BusinessException("E010", "銘柄"));
 
         boolean exists = userFavoriteRepository.existsByUserIdAndStockId(
-                BusinessConstants.LOGIN_USER_ID,
+                currentUserId,
                 stock.getId()
         );
 
         if (exists) {
             userFavoriteRepository.deleteByUserIdAndStockId(
-                    BusinessConstants.LOGIN_USER_ID,
+                    currentUserId,
                     stock.getId()
             );
         }

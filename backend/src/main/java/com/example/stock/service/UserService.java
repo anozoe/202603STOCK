@@ -1,6 +1,5 @@
 package com.example.stock.service;
 
-import com.example.stock.constants.BusinessConstants;
 import com.example.stock.constants.RoleCode;
 import com.example.stock.dto.UserInfoResponse;
 import com.example.stock.dto.UserLoginRequest;
@@ -22,16 +21,17 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final CurrentUserService currentUserService;
 
     @Transactional(readOnly = true)
     public UserInfoResponse getMyInfo() {
-        User user = getLoginUser();
+        User user = currentUserService.getCurrentUser();
         return toUserInfoResponse(user);
     }
 
     @Transactional
     public UserInfoResponse updateMyInfo(UserUpdateRequest request) {
-        User user = getLoginUser();
+        User user = currentUserService.getCurrentUser();
 
         String normalizedUserName = request.getUserName().replaceAll("[\\s　]+", "");
         String trimmedEmail = request.getEmail().trim();
@@ -102,11 +102,6 @@ public class UserService {
     public UserInfoResponse loginUserInfo(UserLoginRequest request) {
         User user = login(request);
         return toUserInfoResponse(user);
-    }
-
-    private User getLoginUser() {
-        return userRepository.findById(BusinessConstants.LOGIN_USER_ID)
-                .orElseThrow(() -> new BusinessException("E010", "ユーザ"));
     }
 
     private UserInfoResponse toUserInfoResponse(User user) {

@@ -1,3 +1,8 @@
+.stock-detail-screen {
+  min-height: 100vh;
+  background: #fff;
+}
+
 .stock-detail-page-body {
   padding: 20px 28px 40px;
   box-sizing: border-box;
@@ -34,12 +39,12 @@
 }
 
 .stock-detail-plus {
-  color: #d62f2f;
+  color: #d63b35 !important;
   font-weight: 700;
 }
 
 .stock-detail-minus {
-  color: #2b64d8;
+  color: #63e36c !important;
   font-weight: 700;
 }
 
@@ -124,7 +129,7 @@
   width: 700px;
   border: 1px solid #cfcfcf;
   background: #fff;
-  padding: 0 10px 10px;
+  padding: 0 16px 10px;
   box-sizing: border-box;
 }
 

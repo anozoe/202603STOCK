@@ -1,24 +1,30 @@
+import { getAuthHeaders } from "../utils/authHeader";
+
 const BASE_URL = "http://localhost:8080/api/admin";
 
 async function fetchJson(url, options = {}) {
   const response = await fetch(url, {
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers || {}),
-    },
     ...options,
+    headers: getAuthHeaders(options.headers || {}),
   });
 
-  const data = await response.json();
+  const text = await response.text();
+  let data = null;
+
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch (e) {
+    data = { message: text || "サーバーエラー" };
+  }
 
   if (!response.ok) {
-    throw data;
+    throw data || { message: "通信に失敗しました。" };
   }
 
   return data;
 }
 
-export async function fetchAdminStocks(page = 0, size = 20) {
+export async function fetchAdminStocks(page = 0, size = 100) {
   return fetchJson(`${BASE_URL}/stocks?page=${page}&size=${size}`);
 }
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import StockListTable from "../components/StockListTable";
 import Pagination from "../components/Pagination";
-import { addFavorite, fetchStocks, removeFavorite } from "../api/stockApi";
+import { fetchStocks, addFavorite, removeFavorite } from "../api/stockApi";
 import "../styles/StockListPage.css";
 
 const PAGE_SIZE = 20;
@@ -10,64 +10,86 @@ const PAGE_SIZE = 20;
 function StockListPage() {
   const [keyword, setKeyword] = useState("");
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [page, setPage] = useState(0);
   const [message, setMessage] = useState("");
-  const [data, setData] = useState({
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const [stockData, setStockData] = useState({
     totalCount: 0,
+    page: 0,
+    size: PAGE_SIZE,
+    totalPages: 0,
     currentFavoriteCount: 0,
     maxFavoriteCount: 20,
     items: [],
   });
 
   useEffect(() => {
-    loadStocks(searchKeyword, page);
-  }, [searchKeyword, page]);
+    loadStocks(0, "");
+  }, []);
 
-  async function loadStocks(nextKeyword, nextPage) {
+  useEffect(() => {
+    loadStocks(currentPage, searchKeyword);
+  }, [currentPage, searchKeyword]);
+
+  async function loadStocks(page, keywordValue) {
     try {
-      const res = await fetchStocks(nextKeyword, nextPage, PAGE_SIZE);
-      setData(res.data);
+      const res = await fetchStocks(page, PAGE_SIZE, keywordValue);
+      setStockData(res.data);
+      setMessage("");
     } catch (error) {
-      setMessage(error.message);
+      console.error("fetchStocks error:", error);
+      setMessage(error.message || "処理に失敗しました。");
+      setStockData({
+        totalCount: 0,
+        page: 0,
+        size: PAGE_SIZE,
+        totalPages: 0,
+        currentFavoriteCount: 0,
+        maxFavoriteCount: 20,
+        items: [],
+      });
     }
   }
 
-  async function handleToggleFavorite(tickerCode) {
+  function handleSearch() {
+    setCurrentPage(0);
+    setSearchKeyword(keyword.trim());
+  }
+
+  async function handleToggleFavorite(tickerCode, isFavorite) {
     try {
-      const item = data.items.find((s) => s.tickerCode === tickerCode);
-      if (item?.favorite) {
+      if (isFavorite) {
         await removeFavorite(tickerCode);
       } else {
         await addFavorite(tickerCode);
       }
-      await loadStocks(searchKeyword, page);
+
+      await loadStocks(currentPage, searchKeyword);
     } catch (error) {
-      setMessage(error.message);
+      console.error("favorite error:", error);
+      setMessage(error.message || "処理に失敗しました。");
     }
   }
 
   return (
     <div className="stock-list-screen">
-      <Header title="銘柄一覧画面" userName="User Name" />
+      <Header />
 
-      <div className="stock-list-page-body">
+      <div className="stock-list-page">
         {message && <div className="page-message">{message}</div>}
 
-        <div className="stock-search-box">
+        <div className="stock-search-area">
           <input
             type="text"
+            className="stock-search-input"
+            placeholder="銘柄コードまたは銘柄名"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            placeholder="銘柄コードまたは銘柄名"
-            className="stock-search-input"
           />
           <button
             type="button"
             className="stock-search-button"
-            onClick={() => {
-              setPage(0);
-              setSearchKeyword(keyword);
-            }}
+            onClick={handleSearch}
           >
             検索
           </button>
@@ -75,18 +97,18 @@ function StockListPage() {
 
         <StockListTable
           title="銘柄一覧"
-          currentCount={data.currentFavoriteCount}
-          maxCount={data.maxFavoriteCount}
-          items={data.items}
+          currentCount={stockData.currentFavoriteCount}
+          maxCount={stockData.maxFavoriteCount}
+          items={stockData.items}
           onToggleFavorite={handleToggleFavorite}
           fromPath="/stocks"
         />
 
         <Pagination
-          currentPage={page}
-          totalCount={data.totalCount}
+          currentPage={currentPage}
+          totalCount={stockData.totalCount}
           pageSize={PAGE_SIZE}
-          onPageChange={setPage}
+          onPageChange={setCurrentPage}
         />
       </div>
     </div>

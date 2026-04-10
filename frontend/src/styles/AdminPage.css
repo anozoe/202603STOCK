@@ -30,13 +30,16 @@
   background: transparent;
   color: #666;
   font-size: 28px;
-  text-decoration: underline;
+  font-weight: 400;
+  text-decoration: none;
   cursor: pointer;
   padding: 0;
+  line-height: 1.2;
 }
 
 .admin-tab-link.active {
   font-weight: 700;
+  text-decoration: underline;
 }
 
 .admin-message {

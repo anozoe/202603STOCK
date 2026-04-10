@@ -1,37 +1,49 @@
-import { parseResponse } from "./apiClient";
+import { getAuthHeaders } from "../utils/authHeader";
 
-const BASE_URL = "http://localhost:8080/api/stocks";
+async function fetchJson(url, options = {}) {
+  const response = await fetch(url, {
+    ...options,
+    headers: getAuthHeaders(options.headers || {}),
+  });
 
-export async function fetchStocks(keyword = "", page = 0, size = 20) {
-  return parseResponse(
-    await fetch(
-      `${BASE_URL}?keyword=${encodeURIComponent(keyword)}&page=${page}&size=${size}`
-    )
-  );
+  const text = await response.text();
+  let data = null;
+
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch (e) {
+    data = { message: text || "サーバーエラー" };
+  }
+
+  if (!response.ok) {
+    throw data || { message: "通信に失敗しました。" };
+  }
+
+  return data;
 }
 
-export async function fetchFavoriteStocks(page = 0, size = 20) {
-  return parseResponse(
-    await fetch(`${BASE_URL}/favorites?page=${page}&size=${size}`)
-  );
+export async function fetchStocks(page = 0, size = 20, keyword = "") {
+  const query = new URLSearchParams({
+    page: String(page),
+    size: String(size),
+    keyword,
+  });
+
+  return fetchJson(`http://localhost:8080/api/stocks?${query.toString()}`);
 }
 
 export async function fetchStockDetail(tickerCode) {
-  return parseResponse(await fetch(`${BASE_URL}/${tickerCode}`));
+  return fetchJson(`http://localhost:8080/api/stocks/${tickerCode}`);
 }
 
 export async function addFavorite(tickerCode) {
-  return parseResponse(
-    await fetch(`${BASE_URL}/${tickerCode}/favorite`, {
-      method: "POST",
-    })
-  );
+  return fetchJson(`http://localhost:8080/api/stocks/${tickerCode}/favorite`, {
+    method: "POST",
+  });
 }
 
 export async function removeFavorite(tickerCode) {
-  return parseResponse(
-    await fetch(`${BASE_URL}/${tickerCode}/favorite`, {
-      method: "DELETE",
-    })
-  );
+  return fetchJson(`http://localhost:8080/api/stocks/${tickerCode}/favorite`, {
+    method: "DELETE",
+  });
 }

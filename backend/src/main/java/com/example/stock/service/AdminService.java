@@ -11,6 +11,7 @@ import com.example.stock.dto.UserInfoResponse;
 import com.example.stock.entity.Stock;
 import com.example.stock.entity.User;
 import com.example.stock.exception.BusinessException;
+import com.example.stock.repository.StockPriceHistoryRepository;
 import com.example.stock.repository.StockRepository;
 import com.example.stock.repository.UserFavoriteRepository;
 import com.example.stock.repository.UserRepository;
@@ -34,6 +35,7 @@ public class AdminService {
     private final UserRepository userRepository;
     private final UserFavoriteRepository userFavoriteRepository;
     private final StockMarketSyncService stockMarketSyncService;
+    private final StockPriceHistoryRepository stockPriceHistoryRepository;
 
     @Transactional(readOnly = true)
     public AdminStockListResponse getStocks(int page, int size) {
@@ -100,8 +102,10 @@ public class AdminService {
                 .orElseThrow(() -> new BusinessException("E010", "銘柄"));
 
         userFavoriteRepository.deleteByStockId(stock.getId());
+        stockPriceHistoryRepository.deleteByStockId(stock.getId());
         stockRepository.delete(stock);
-        normalizeDisplayOrder();
+
+     normalizeDisplayOrder();
     }
 
     @Transactional
