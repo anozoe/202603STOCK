@@ -321,17 +321,27 @@ function PriceTrendChart({ data, chartType }) {
           );
         })}
 
-      {data.map((point, index) => (
-        <text
-          key={`price-x-${point.date}-${index}`}
-          x={chart.getX(index)}
-          y={height - 14}
-          textAnchor="middle"
-          className="stock-detail-axis-label"
-        >
-          {formatChartDate(point.date)}
-        </text>
-      ))}
+      {data.map((point, index) => {
+        const today = new Date().toISOString().slice(0, 10);
+        const isToday = point.date === today;
+
+        const showLabel =
+          index % 7 === 0 || index === 0 && !isToday;
+
+        if (!showLabel) return null;
+
+        return (
+          <text
+            key={`price-x-${point.date}-${index}`}
+            x={chart.getX(index)}
+            y={height - 14}
+            textAnchor="middle"
+            className="stock-detail-axis-label"
+          >
+            {formatChartDate(point.date)}
+          </text>
+        );
+      })}
     </svg>
   );
 }
@@ -388,17 +398,27 @@ function MovingAverageChart({ data }) {
         className="stock-detail-ma-series-solid"
       />
 
-      {data.map((point, index) => (
-        <text
-          key={`ma-x-${point.date}-${index}`}
-          x={chart.getX(index)}
-          y={height - 14}
-          textAnchor="middle"
-          className="stock-detail-axis-label"
-        >
-          {formatChartDate(point.date)}
-        </text>
-      ))}
+      {data.map((point, index) => {
+        const today = new Date().toISOString().slice(0, 10);
+        const isToday = point.date === today;
+
+        const showLabel =
+          index % 7 === 0 || index === 0 && !isToday;
+
+        if (!showLabel) return null;
+
+        return (
+          <text
+            key={`ma-x-${point.date}-${index}`}
+            x={chart.getX(index)}
+            y={height - 14}
+            textAnchor="middle"
+            className="stock-detail-axis-label"
+          >
+            {formatChartDate(point.date)}
+          </text>
+        );
+      })}
 
       <text x={width - 30} y={height / 2} className="stock-detail-ma-legend-text">
         5日
