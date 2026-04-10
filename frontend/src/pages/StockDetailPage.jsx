@@ -31,22 +31,22 @@ function formatNumber(value) {
   return Number(value).toLocaleString();
 }
 
-function formatDateYYMMDD(value) {
+function formatDateYYYYMMDD(value) {
   if (!value) return "-";
 
   const raw = String(value).slice(0, 10);
   const parts = raw.split("-");
   if (parts.length === 3) {
-    return `${parts[0].slice(2)}/${parts[1]}/${parts[2]}`;
+    return `${parts[0]}/${parts[1]}/${parts[2]}`;
   }
 
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "-";
 
-  const yy = String(date.getFullYear()).slice(2);
+  const yyyy = String(date.getFullYear());
   const mm = String(date.getMonth() + 1).padStart(2, "0");
   const dd = String(date.getDate()).padStart(2, "0");
-  return `${yy}/${mm}/${dd}`;
+  return `${yyyy}/${mm}/${dd}`;
 }
 
 function getDiffClass(value) {
@@ -513,7 +513,7 @@ function StockDetailPage() {
           </div>
           <div className="stock-detail-line">
             <strong>データ取得日：</strong>
-            {formatDateYYMMDD(data.fetchedAt)}
+            {formatDateYYYYMMDD(data.fetchedAt)}
           </div>
         </div>
 
