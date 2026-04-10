@@ -283,6 +283,7 @@ function AdminPage() {
           >
             銘柄編集
           </button>
+
           <button
             type="button"
             className={`admin-tab-link ${activeTab === "user" ? "active" : ""}`}

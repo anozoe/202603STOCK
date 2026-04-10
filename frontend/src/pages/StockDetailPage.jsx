@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import { fetchStockDetail } from "../api/stockApi";
@@ -13,20 +13,12 @@ function marketLabel(code) {
   return map[code] || "-";
 }
 
-function formatPrice(value) {
+function formatPriceWithDollar(value) {
   if (value === null || value === undefined || value === "") return "-";
   return `$${Number(value).toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
-}
-
-function formatPlainPrice(value) {
-  if (value === null || value === undefined || value === "") return "-";
-  return Number(value).toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
 }
 
 function formatPercent(value) {
@@ -39,9 +31,22 @@ function formatNumber(value) {
   return Number(value).toLocaleString();
 }
 
-function formatDateOnly(value) {
+function formatDateYYYYMMDD(value) {
   if (!value) return "-";
-  return String(value).slice(0, 10);
+
+  const raw = String(value).slice(0, 10);
+  const parts = raw.split("-");
+  if (parts.length === 3) {
+    return `${parts[0]}/${parts[1]}/${parts[2]}`;
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
+
+  const yyyy = String(date.getFullYear());
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+  return `${yyyy}/${mm}/${dd}`;
 }
 
 function getDiffClass(value) {
@@ -94,7 +99,8 @@ function withMovingAverage5(points) {
     const start = Math.max(0, index - 4);
     const target = points.slice(start, index + 1);
     const avg =
-      target.reduce((sum, item) => sum + Number(item.closePrice || 0), 0) / target.length;
+      target.reduce((sum, item) => sum + Number(item.closePrice || 0), 0) /
+      target.length;
 
     return {
       ...point,
@@ -103,10 +109,14 @@ function withMovingAverage5(points) {
   });
 }
 
+function formatChartDate(value) {
+  return String(value).slice(5).replace("-", "/");
+}
+
 function buildPriceChart(points, width, height, chartType) {
   if (!points || points.length === 0) return null;
 
-  const padding = { top: 18, right: 18, bottom: 44, left: 56 };
+  const padding = { top: 18, right: 56, bottom: 44, left: 86 };
   const plotWidth = width - padding.left - padding.right;
   const plotHeight = height - padding.top - padding.bottom;
 
@@ -119,9 +129,13 @@ function buildPriceChart(points, width, height, chartType) {
   const displayMax = maxValue + range * 0.08;
   const displayRange = displayMax - displayMin || 1;
 
+  const xStart = padding.left + 22;
+  const xEnd = width - padding.right - 22;
+  const usableWidth = xEnd - xStart;
+
   const getX = (index) => {
-    if (points.length === 1) return padding.left + plotWidth / 2;
-    return padding.left + (plotWidth * index) / (points.length - 1);
+    if (points.length === 1) return xStart + usableWidth / 2;
+    return xStart + (usableWidth * index) / (points.length - 1);
   };
 
   const getY = (value) =>
@@ -133,8 +147,14 @@ function buildPriceChart(points, width, height, chartType) {
     return { value, y };
   });
 
-  const linePoints = points.map((p, i) => `${getX(i)},${getY(p.closePrice)}`).join(" ");
-  const bodyWidth = Math.max(10, Math.min(22, plotWidth / Math.max(points.length * 2.2, 8)));
+  const linePoints = points
+    .map((p, i) => `${getX(i)},${getY(p.closePrice)}`)
+    .join(" ");
+
+  const bodyWidth = Math.max(
+    8,
+    Math.min(18, usableWidth / Math.max(points.length * 2.8, 8))
+  );
 
   return {
     padding,
@@ -146,17 +166,21 @@ function buildPriceChart(points, width, height, chartType) {
     chartType,
     width,
     height,
+    xStart,
+    xEnd,
   };
 }
 
 function buildMaChart(points, width, height) {
   if (!points || points.length === 0) return null;
 
-  const padding = { top: 18, right: 58, bottom: 44, left: 56 };
+  const padding = { top: 18, right: 58, bottom: 44, left: 72 };
   const plotWidth = width - padding.left - padding.right;
   const plotHeight = height - padding.top - padding.bottom;
 
-  const values = points.map((p) => Number(p.movingAverage5 ?? p.closePrice ?? 0));
+  const values = points.map((p) =>
+    Number(p.movingAverage5 ?? p.closePrice ?? 0)
+  );
   const minValue = Math.min(...values);
   const maxValue = Math.max(...values);
   const range = maxValue - minValue || 1;
@@ -196,7 +220,10 @@ function buildMaChart(points, width, height) {
 function PriceTrendChart({ data, chartType }) {
   const width = 690;
   const height = 210;
-  const chart = useMemo(() => buildPriceChart(data, width, height, chartType), [data, chartType]);
+  const chart = useMemo(
+    () => buildPriceChart(data, width, height, chartType),
+    [data, chartType]
+  );
 
   if (!data.length || !chart) {
     return <div className="stock-detail-chart-empty">チャートデータがありません。</div>;
@@ -207,14 +234,14 @@ function PriceTrendChart({ data, chartType }) {
       {chart.yLines.map((line) => (
         <g key={`price-grid-${line.y}`}>
           <line
-            x1={chart.padding.left}
+            x1={chart.xStart}
             y1={line.y}
-            x2={width - chart.padding.right}
+            x2={chart.xEnd}
             y2={line.y}
             className="stock-detail-grid-line"
           />
           <text
-            x={chart.padding.left - 8}
+            x={chart.xStart - 8}
             y={line.y + 4}
             textAnchor="end"
             className="stock-detail-axis-label"
@@ -225,16 +252,16 @@ function PriceTrendChart({ data, chartType }) {
       ))}
 
       <line
-        x1={chart.padding.left}
+        x1={chart.xStart}
         y1={height - chart.padding.bottom}
-        x2={width - chart.padding.right}
+        x2={chart.xEnd}
         y2={height - chart.padding.bottom}
         className="stock-detail-axis-line"
       />
       <line
-        x1={chart.padding.left}
+        x1={chart.xStart}
         y1={chart.padding.top}
-        x2={chart.padding.left}
+        x2={chart.xStart}
         y2={height - chart.padding.bottom}
         className="stock-detail-axis-line"
       />
@@ -302,7 +329,7 @@ function PriceTrendChart({ data, chartType }) {
           textAnchor="middle"
           className="stock-detail-axis-label"
         >
-          {String(point.date).slice(5)}
+          {formatChartDate(point.date)}
         </text>
       ))}
     </svg>
@@ -355,7 +382,11 @@ function MovingAverageChart({ data }) {
         className="stock-detail-axis-line"
       />
 
-      <polyline fill="none" points={chart.linePoints} className="stock-detail-ma-series-solid" />
+      <polyline
+        fill="none"
+        points={chart.linePoints}
+        className="stock-detail-ma-series-solid"
+      />
 
       {data.map((point, index) => (
         <text
@@ -365,7 +396,7 @@ function MovingAverageChart({ data }) {
           textAnchor="middle"
           className="stock-detail-axis-label"
         >
-          {String(point.date).slice(5)}
+          {formatChartDate(point.date)}
         </text>
       ))}
 
@@ -387,11 +418,7 @@ function StockDetailPage() {
   const [chartType, setChartType] = useState("candle");
   const [period, setPeriod] = useState("week");
 
-  useEffect(() => {
-    loadDetail();
-  }, [tickerCode]);
-
-  async function loadDetail() {
+  const loadDetail = useCallback(async () => {
     try {
       const res = await fetchStockDetail(tickerCode);
       setData(res.data);
@@ -399,7 +426,11 @@ function StockDetailPage() {
     } catch (error) {
       setMessage(error.message || "取得に失敗しました。");
     }
-  }
+  }, [tickerCode]);
+
+  useEffect(() => {
+    loadDetail();
+  }, [loadDetail]);
 
   function handleBack() {
     if (location.state?.fromPath) {
@@ -422,9 +453,14 @@ function StockDetailPage() {
     );
   }
 
-  const rawChartPoints = period === "week" ? data.weekChart || [] : data.monthChart || [];
+  const rawChartPoints =
+    period === "week" ? data.weekChart || [] : data.monthChart || [];
   const chartPoints = withMovingAverage5(normalizeChartData(rawChartPoints));
-  const changeRate = calcChangeRate(data.currentPrice, data.priceChange, data.changeRate);
+  const changeRate = calcChangeRate(
+    data.currentPrice,
+    data.priceChange,
+    data.changeRate
+  );
   const diffClass = getDiffClass(data.priceChange);
 
   return (
@@ -434,47 +470,68 @@ function StockDetailPage() {
       <div className="stock-detail-page-body">
         {message && <div className="page-message">{message}</div>}
 
-        <button type="button" className="stock-detail-back-button" onClick={handleBack}>
+        <button
+          type="button"
+          className="stock-detail-back-button"
+          onClick={handleBack}
+        >
           ↵戻る
         </button>
 
         <div className="stock-detail-summary">
           <div className="stock-detail-line">
-            <strong>銘柄コード：</strong>{data.tickerCode}
+            <strong>銘柄コード：</strong>
+            {data.tickerCode}
           </div>
           <div className="stock-detail-line stock-detail-name-line">
-            <strong>銘柄名：</strong>{data.stockName}
+            <strong>銘柄名：</strong>
+            {data.stockName}
           </div>
           <div className="stock-detail-line">
-            <strong>取引市場：</strong>{marketLabel(data.market)}
+            <strong>取引市場：</strong>
+            {marketLabel(data.market)}
           </div>
           <div className="stock-detail-line">
-            <strong>現在値：</strong>{formatPlainPrice(data.currentPrice)} ドル
+            <strong>現在値：</strong>
+            {formatPriceWithDollar(data.currentPrice)}
           </div>
           <div className="stock-detail-line">
             <strong>前日比（騰落率）：</strong>
             <span className={diffClass}>
-              {Number(data.priceChange) > 0 ? "+" : ""}
-              {formatPlainPrice(data.priceChange)} ドル
-              {changeRate !== null ? `（${changeRate > 0 ? "+" : ""}${formatPercent(changeRate)}）` : ""}
+              {Number(data.priceChange) > 0
+                ? "+"
+                : Number(data.priceChange) < 0
+                ? "-"
+                : ""}
+              {formatPriceWithDollar(Math.abs(Number(data.priceChange || 0)))}
+              {changeRate !== null
+                ? `（${
+                    changeRate > 0 ? "+" : changeRate < 0 ? "-" : ""
+                  }${formatPercent(Math.abs(changeRate))}）`
+                : ""}
             </span>
           </div>
           <div className="stock-detail-line">
-            <strong>データ取得日：</strong>{formatDateOnly(data.fetchedAt)}
+            <strong>データ取得日：</strong>
+            {formatDateYYYYMMDD(data.fetchedAt)}
           </div>
         </div>
 
         <div className="stock-detail-tab-row">
           <button
             type="button"
-            className={`stock-detail-tab-button ${activeTab === "overview" ? "active" : ""}`}
+            className={`stock-detail-tab-button ${
+              activeTab === "overview" ? "active" : ""
+            }`}
             onClick={() => setActiveTab("overview")}
           >
             概要
           </button>
           <button
             type="button"
-            className={`stock-detail-tab-button ${activeTab === "chart" ? "active" : ""}`}
+            className={`stock-detail-tab-button ${
+              activeTab === "chart" ? "active" : ""
+            }`}
             onClick={() => setActiveTab("chart")}
           >
             チャート
@@ -487,16 +544,16 @@ function StockDetailPage() {
 
             <div className="stock-detail-ohlc-grid">
               <div className="stock-detail-ohlc-box">
-                始値 {formatPlainPrice(data.overview?.openPrice)}
+                始値 {formatPriceWithDollar(data.overview?.openPrice)}
               </div>
               <div className="stock-detail-ohlc-box">
-                高値 {formatPlainPrice(data.overview?.highPrice)}
+                高値 {formatPriceWithDollar(data.overview?.highPrice)}
               </div>
               <div className="stock-detail-ohlc-box">
-                安値 {formatPlainPrice(data.overview?.lowPrice)}
+                安値 {formatPriceWithDollar(data.overview?.lowPrice)}
               </div>
               <div className="stock-detail-ohlc-box">
-                終値 {formatPlainPrice(data.overview?.closePrice)}
+                終値 {formatPriceWithDollar(data.overview?.closePrice)}
               </div>
             </div>
 
@@ -536,14 +593,18 @@ function StockDetailPage() {
                 <div className="stock-detail-chart-top-buttons">
                   <button
                     type="button"
-                    className={`stock-detail-switch-button ${chartType === "candle" ? "active" : ""}`}
+                    className={`stock-detail-switch-button ${
+                      chartType === "candle" ? "active" : ""
+                    }`}
                     onClick={() => setChartType("candle")}
                   >
                     ローソク
                   </button>
                   <button
                     type="button"
-                    className={`stock-detail-switch-button ${chartType === "line" ? "active" : ""}`}
+                    className={`stock-detail-switch-button ${
+                      chartType === "line" ? "active" : ""
+                    }`}
                     onClick={() => setChartType("line")}
                   >
                     折れ線
@@ -555,14 +616,18 @@ function StockDetailPage() {
                 <div className="stock-detail-chart-bottom-buttons">
                   <button
                     type="button"
-                    className={`stock-detail-period-button ${period === "week" ? "active" : ""}`}
+                    className={`stock-detail-period-button ${
+                      period === "week" ? "active" : ""
+                    }`}
                     onClick={() => setPeriod("week")}
                   >
                     1週
                   </button>
                   <button
                     type="button"
-                    className={`stock-detail-period-button ${period === "month" ? "active" : ""}`}
+                    className={`stock-detail-period-button ${
+                      period === "month" ? "active" : ""
+                    }`}
                     onClick={() => setPeriod("month")}
                   >
                     1か月
@@ -580,14 +645,18 @@ function StockDetailPage() {
                 <div className="stock-detail-chart-bottom-buttons">
                   <button
                     type="button"
-                    className={`stock-detail-period-button ${period === "week" ? "active" : ""}`}
+                    className={`stock-detail-period-button ${
+                      period === "week" ? "active" : ""
+                    }`}
                     onClick={() => setPeriod("week")}
                   >
                     1週
                   </button>
                   <button
                     type="button"
-                    className={`stock-detail-period-button ${period === "month" ? "active" : ""}`}
+                    className={`stock-detail-period-button ${
+                      period === "month" ? "active" : ""
+                    }`}
                     onClick={() => setPeriod("month")}
                   >
                     1か月

@@ -1,35 +1,59 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import "../styles/StockListTable.css";
 
-function marketLabel(code) {
-  const map = { 1: "NASDAQ", 2: "NYSE", 3: "AMEX" };
-  return map[code] || code || "-";
-}
-
-function formatDollar(value) {
-  if (value === null || value === undefined) return "-";
-  const num = Number(value);
-  return `$${num.toLocaleString(undefined, {
+function formatPrice(value) {
+  if (value === null || value === undefined || value === "") return "-";
+  return Number(value).toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  })}`;
+  });
 }
 
 function formatPercent(value) {
-  if (value === null || value === undefined) return "-";
+  if (value === null || value === undefined || value === "") return "-";
   return `${Number(value).toFixed(2)}%`;
 }
 
-function valueClass(value) {
+function formatMarketCapThousandDollar(value) {
+  if (value === null || value === undefined || value === "") return "-";
+  return Math.round(Number(value) / 1000).toLocaleString();
+}
+
+function marketLabel(code) {
+  const map = {
+    1: "NASDAQ",
+    2: "NYSE",
+    3: "AMEX",
+  };
+  return map[code] || "-";
+}
+
+function getDiffClass(value) {
   const num = Number(value);
-  if (value === null || value === undefined || Number.isNaN(num)) return "";
-  if (num > 0) return "plus-value";
-  if (num < 0) return "minus-value";
+  if (Number.isNaN(num)) return "";
+  if (num > 0) return "stock-value-plus";
+  if (num < 0) return "stock-value-minus";
   return "";
 }
 
-function formatMarketCap(value) {
-  if (value === null || value === undefined) return "-";
-  return `$${Number(value).toLocaleString()}`;
+function renderSignedPrice(value) {
+  const num = Number(value);
+  if (value === null || value === undefined || value === "" || Number.isNaN(num)) {
+    return "---";
+  }
+  if (num > 0) return `+${formatPrice(num)}`;
+  if (num < 0) return `-${formatPrice(Math.abs(num))}`;
+  return formatPrice(num);
+}
+
+function renderSignedPercent(value) {
+  const num = Number(value);
+  if (value === null || value === undefined || value === "" || Number.isNaN(num)) {
+    return "0.00%";
+  }
+  if (num > 0) return `+${formatPercent(num)}`;
+  if (num < 0) return `-${formatPercent(Math.abs(num))}`;
+  return formatPercent(num);
 }
 
 function StockListTable({
@@ -38,15 +62,13 @@ function StockListTable({
   maxCount,
   items,
   onToggleFavorite,
-  fromPath = "/stocks",
+  fromPath,
 }) {
-  const navigate = useNavigate();
-
   return (
-    <div className="stock-list-component">
-      <div className="stock-list-component-header">
-        <div className="stock-list-component-title">{title}</div>
-        <div className="stock-list-component-favorite-count">
+    <div className="stock-list-table-section">
+      <div className="stock-list-table-header">
+        <h2 className="stock-list-table-title">{title}</h2>
+        <div className="stock-list-favorite-count">
           お気に入り　{currentCount}/{maxCount}件
         </div>
       </div>
@@ -54,20 +76,20 @@ function StockListTable({
       <table className="stock-list-table">
         <thead>
           <tr>
-            <th className="col-code">銘柄コード</th>
-            <th className="col-name">銘柄名</th>
-            <th className="col-market">市場</th>
-            <th className="col-price">現在値</th>
-            <th className="col-change">前日比</th>
-            <th className="col-rate">騰落率</th>
-            <th className="col-cap">時価総額</th>
-            <th className="col-favorite">お気に入り</th>
+            <th>銘柄コード</th>
+            <th>銘柄名</th>
+            <th>市場</th>
+            <th>現在値</th>
+            <th>前日比</th>
+            <th>騰落率</th>
+            <th>時価総額（千ドル）</th>
+            <th>お気に入り</th>
           </tr>
         </thead>
         <tbody>
           {items.length === 0 ? (
             <tr>
-              <td colSpan="8" className="empty-cell">
+              <td colSpan="8" className="stock-list-empty">
                 該当する銘柄はありません。
               </td>
             </tr>
@@ -76,34 +98,30 @@ function StockListTable({
               <tr key={item.tickerCode}>
                 <td>{item.tickerCode}</td>
                 <td>
-                  <button
-                    type="button"
+                  <Link
+                    to={`/stocks/${item.tickerCode}`}
+                    state={{ fromPath }}
                     className="stock-name-link"
-                    onClick={() =>
-                      navigate(`/stocks/${item.tickerCode}`, {
-                        state: { from: fromPath },
-                      })
-                    }
                   >
                     {item.stockName}
-                  </button>
+                  </Link>
                 </td>
                 <td>{marketLabel(item.market)}</td>
-                <td>{formatDollar(item.currentPrice)}</td>
-                <td className={valueClass(item.priceChange)}>
-                  {formatDollar(item.priceChange)}
+                <td>{formatPrice(item.currentPrice)}</td>
+                <td className={getDiffClass(item.priceChange)}>
+                  {renderSignedPrice(item.priceChange)}
                 </td>
-                <td className={valueClass(item.changeRate)}>
-                  {formatPercent(item.changeRate)}
+                <td className={getDiffClass(item.changeRate)}>
+                  {renderSignedPercent(item.changeRate)}
                 </td>
-                <td>{formatMarketCap(item.marketCap)}</td>
-                <td className="favorite-cell">
+                <td>{formatMarketCapThousandDollar(item.marketCap)}</td>
+                <td>
                   <button
                     type="button"
-                    className={`favorite-star ${item.favorite ? "active" : ""}`}
-                    onClick={() => onToggleFavorite(item.tickerCode)}
+                    className={`favorite-button ${item.favorite ? "is-favorite" : "is-not-favorite"}`}
+                    onClick={() => onToggleFavorite(item.tickerCode, item.favorite)}
                   >
-                    ★
+                    {item.favorite ? "★" : "☆"}
                   </button>
                 </td>
               </tr>
